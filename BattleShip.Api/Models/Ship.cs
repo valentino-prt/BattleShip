@@ -7,6 +7,9 @@
         public ShipType Type { get; set; } // Type of the ship
         public Direction Direction { get; set; } // Direction of the ship
 
+        public int Hits { get; set; } // Number of hits on the ship
+
+
 
         public Ship(ShipType type, int x, int y, Direction direction)
         {
@@ -14,6 +17,8 @@
             X = x;
             Y = y;
             Direction = direction;
+            Hits = 0;
+
         }
 
         public int Length => Type switch

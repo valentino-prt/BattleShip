@@ -11,7 +11,7 @@ public class Board
 
     public char[,] grid { get; set; } // grid of the board
 
-    private List<Ship> _ships = new List<Ship>(); // list of ships on the board, now private
+    public List<Ship> Ships = new List<Ship>(); // list of ships on the board, now private
 
     public int attacks { get; set; } // number of attacks made on the board
 
@@ -62,7 +62,7 @@ public class Board
     public void AddShip(Ship ship)
     {
         // Add the ship to the list
-        _ships.Add(ship);
+        Ships.Add(ship);
 
         // Update the grid based on the ship's position and length
         UpdateGridWithShip(ship);
@@ -74,18 +74,15 @@ public class Board
         {
             if (ship.Direction == Direction.Horizontal)
             {
-                grid[ship.X + i, ship.Y] = ship.Type.ToString()[0];
+                grid[ship.X + i, ship.Y] = (this.Ships.Count - 1).ToString()[0];
             }
             else // Direction.Vertical
             {
-                grid[ship.X, ship.Y + i] = ship.Type.ToString()[0];
+                grid[ship.X, ship.Y + i] = (this.Ships.Count - 1).ToString()[0];
             }
         }
     }
 
-    public IEnumerable<Ship> Ships => _ships.AsReadOnly(); // Expose ships as a read-only collection
-
 
 }
-
 

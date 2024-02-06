@@ -13,6 +13,8 @@ Ship.cs : Représente un bateau.
 Game.cs : Représente l'état d'une partie.
 Utils : Dossier pour les utilitaires, comme la génération de la grille.
 BoardGenerator.cs : Classe pour générer les grilles de jeu pour le joueur et l'IA.
+
+
 2. BattleShip.App (Frontend Web)
 Pages : Dossier pour les composants Razor qui représentent les pages de l'application.
 Index.razor : Page d'accueil du jeu.
@@ -28,6 +30,8 @@ Board.cs, Ship.cs, Game.cs : Comme mentionné dans la partie API.
 .sln : Solution Visual Studio englobant tous les projets.
 Dockerfile (Optionnel) : Si vous souhaitez conteneuriser votre application.
 README.md : Documentation sur le projet, comment le construire, le déployer, et l'utiliser.
+
+
 5. Considérations supplémentaires
 Tests : Pensez à inclure des projets de test pour l'API et le frontend si possible.
 BattleShip.Api.Tests : Tests unitaires pour l'API.
