@@ -1,5 +1,7 @@
 ﻿using BattleShip.Api.Models;
+using BattleShip.Models;
 namespace BattleShip.Api.Utils;
+
 
 public class BoardGenerator
 {

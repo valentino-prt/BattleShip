@@ -1,8 +1,9 @@
 ﻿namespace BattleShip.Api.Services;
+using BattleShip.Models;
 using BattleShip.Api.Models;
 public interface IGameService
 {
-    Game CreateGame();
-    AttackResult Attack(Game game, int x, int y);
+    GameInfo CreateGame();
+    GameInfo Attack(Guid gameId, int x, int y);
     bool IsGameOver(Game game);
 }

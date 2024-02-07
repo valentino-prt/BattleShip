@@ -1,4 +1,6 @@
-﻿namespace BattleShip.Api.Models;
+﻿using BattleShip.Models;
+
+namespace BattleShip.Api.Models;
 
 public class Board
 {

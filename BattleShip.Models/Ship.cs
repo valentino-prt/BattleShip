@@ -1,4 +1,4 @@
-﻿namespace BattleShip.Api.Models;
+﻿namespace BattleShip.Models;
 
 public class Ship
 {

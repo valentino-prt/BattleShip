@@ -1,4 +1,11 @@
+using BattleShip.Api.Models;
+using BattleShip.Api.Services;
+using Microsoft.AspNetCore.Mvc;
+using BattleShip.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<IGameService, GameService>();
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -16,29 +23,32 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+// Endpoint pour créer une nouvelle partie
+app.MapPost("/games", (IGameService gameService) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    GameInfo gameInfo = gameService.CreateGame();
+    return TypedResults.Ok(gameInfo);
 })
-.WithName("GetWeatherForecast")
+.WithName("CreateGame")
 .WithOpenApi();
+
+// Endpoint pour attaquer une case
+app.MapPut("/games/{gameId}/attack", (Guid gameId, [FromBody] AttackRequest request, IGameService gameService) =>
+{
+    try
+    {
+        GameInfo result = gameService.Attack(gameId, request.X, request.Y);
+        return TypedResults.Ok(result);
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.NotFound(ex.Message);
+    }
+})
+.WithName("Attack")
+.WithOpenApi();
+
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public record AttackRequest(int X, int Y);
