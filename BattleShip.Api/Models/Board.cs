@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Primitives;
-
-namespace BattleShip.Api;
+﻿namespace BattleShip.Api.Models;
 
 public class Board
 {
