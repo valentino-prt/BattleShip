@@ -1,65 +1,55 @@
-﻿using System;
-namespace BattleShip.Api.Services
+﻿using BattleShip.Api.Models;
+
+
+namespace BattleShip.Api.Services;
+
+public class GameService : IGameService
 {
-    public class GameService : IGameService
+    public Game CreateGame()
     {
-        public Game CreateGame()
+        return new Game();
+
+
+    }
+
+    public AttackResult Attack(Game game, int x, int y)
+    {
+        char val = game.Boards[game.Player].grid[x, y];
+        switch (val)
         {
-            return new Game();
+            case '\0':
+                game.Boards[game.Player].grid[x, y] = 'O';
+                game.Player = game.Player == 0 ? 1 : 0;
+                return new AttackResult(AttackOutcome.Miss);
+            case 'O':
+            case 'X':
+                return new AttackResult(AttackOutcome.AlreadyAttacked);
+            default:
+                int shipNumber = (int)val - '0'; // Assurez-vous que cette conversion est correcte selon votre implémentation
+                var ship = game.Boards[game.Player].Ships[shipNumber];
+                ship.Hits++;
+                game.Boards[game.Player].grid[x, y] = 'X';
 
-        }
-
-        public AttackResult Attack(Game game, int x, int y)
-        {
-            char val = game.Boards[game.Player].grid[x, y];
-            switch (val)
-            {
-                case '\0':
-                    game.Boards[game.Player].grid[x, y] = 'O';
-                    game.Player = game.Player == 0 ? 1 : 0;
-                    return AttackResult.Miss;
-                case 'O':
-                    return AttackResult.AlreadyAttacked;
-
-                case 'X':
-                    return AttackResult.AlreadyAttacked;
-                default:
-                    int shipNumber = (int)val;
-                    game.Boards[game.Player].Ships[shipNumber].Hits++;
-                    game.Boards[game.Player].grid[x, y] = 'X';
-
-                    if (game.Boards[game.Player].Ships[shipNumber].Hits == game.Boards[game.Player].Ships[shipNumber].Length)
-                    {
-                        return AttackResult.Sunk;
-                    }
-                    else
-                    {
-                        return AttackResult.Hit;
-
-                    }
-            }
-        }
-
-        public bool IsGameOver(Game game)
-        {
-            foreach (var ship in game.Boards[game.Player].Ships)
-            {
-                if (ship.Hits != ship.Length)
+                if (ship.Hits == ship.Length)
                 {
-                    return false;
+                    return new AttackResult(AttackOutcome.Sunk, ship.Type.ToString()); // Inclure le nom du bateau
                 }
-            }
-            return true;
+                else
+                {
+                    return new AttackResult(AttackOutcome.Hit);
+                }
         }
     }
 
-    public enum AttackResult
+    public bool IsGameOver(Game game)
     {
-        Miss,
-        Hit,
-        Sunk,
-        AlreadyAttacked
+        foreach (var ship in game.Boards[game.Player].Ships)
+        {
+            if (ship.Hits != ship.Length)
+            {
+                return false;
+            }
+        }
+        return true;
     }
-
-
 }
