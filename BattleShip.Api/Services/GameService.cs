@@ -1,6 +1,7 @@
 ﻿using BattleShip.Api.Models;
 using BattleShip.Models;
 
+
 namespace BattleShip.Api.Services
 {
     public class GameService : IGameService
@@ -9,16 +10,16 @@ namespace BattleShip.Api.Services
         private readonly AutoPlayer _autoPlayer = new();
 
 
-        public GameInfo CreateGame()
+        public GameInitInfo CreateGame()
         {
             Game newGame = new();
             Games.Add(newGame);
 
             // Initialiser les navires ici ou dans le constructeur de Game selon votre implémentation
-            return new GameInfo(newGame.Id, newGame.Boards[0].Ships);
+            return new GameInitInfo(newGame.Id, newGame.Boards[0].Ships);
         }
 
-        public GameInfo Attack(Guid gameId, int x, int y)
+        public GamePlayInfo Attack(Guid gameId, int x, int y)
         {
             Game game = FindGame(gameId) ?? throw new ArgumentException("Invalid game ID");
             // Effectuer l'attaque du joueur
@@ -44,13 +45,13 @@ namespace BattleShip.Api.Services
                 }
 
                 // Mettre à jour le GameInfo avec les résultats de l'attaque de l'AutoPlayer
-                return new GameInfo(game.Id, game.Boards[game.Player].Ships, winner, playerAttackResult, autoPlayerAttackResult);
+                return new GamePlayInfo(game.Id, winner, playerAttackResult, autoPlayerAttackResult);
             }
             else
             {
                 winner = DetermineWinner(game);
                 RemoveGame(game.Id);
-                return new GameInfo(game.Id, game.Boards[game.Player].Ships, winner, playerAttackResult);
+                return new GamePlayInfo(game.Id, winner, playerAttackResult);
             }
         }
 

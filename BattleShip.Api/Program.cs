@@ -37,7 +37,7 @@ app.UseCors("AllowMyOrigin");
 // Endpoint pour créer une nouvelle partie
 app.MapPost("/games", (IGameService gameService) =>
 {
-    GameInfo gameInfo = gameService.CreateGame();
+    GameInitInfo gameInfo = gameService.CreateGame();
     return TypedResults.Ok(gameInfo);
 })
 .WithName("CreateGame")
@@ -48,7 +48,7 @@ app.MapPut("/games/{gameId}/attack", (Guid gameId, [FromBody] AttackRequest requ
 {
     try
     {
-        GameInfo result = gameService.Attack(gameId, request.X, request.Y);
+        GamePlayInfo result = gameService.Attack(gameId, request.X, request.Y);
         return TypedResults.Ok(result);
     }
     catch (ArgumentException ex)
