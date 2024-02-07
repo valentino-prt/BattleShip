@@ -1,0 +1,17 @@
+@page "/"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<h1>Welcome to BattleShip!</h1>
+
+<button @onclick="StartGame">Start</button>
+
+@code {
+    private async Task StartGame()
+    {
+        //HttpResponseMessage response = await httpClient.PostAsync("/api/game/create", null);
+        //response.EnsureSuccessStatusCode();
+
+        navigationManager.NavigateTo("/home");
+    }
+}

@@ -1,3 +1,5 @@
+@inject HttpClient Http
+
 <style>
     .board-table {
         width: 40%;
@@ -59,8 +61,22 @@
 </table>
 
 @code {
-    private void CellClicked(char row, int col)
+    private async Task CellClicked(char row, int col)
     {
+        // Handle the click event here
         Console.WriteLine($"Cell {row}{col} was clicked");
+
+        // Send a GET request to your API
+        var response = await Http.GetAsync($"http://localhost:5143/api/cellClicked?row={row}&col={col}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(content);
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+        }
     }
 }
