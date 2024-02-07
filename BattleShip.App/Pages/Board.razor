@@ -39,7 +39,8 @@
             <th></th>
             @for (int i = 1; i <= 10; i++)
             {
-                <th>@i</th>
+                var ii = i;
+                <th>@ii</th>
             }
         </tr>
     </thead>
@@ -67,7 +68,7 @@
         Console.WriteLine($"Cell {row}{col} was clicked");
 
         // Send a GET request to your API
-        var response = await Http.GetAsync($"http://localhost:5143/api/cellClicked?row={row}&col={col}");
+        /*var response = await Http.GetAsync($"http://localhost:5143/api/cellClicked?row={row}&col={col}");
 
         if (response.IsSuccessStatusCode)
         {
@@ -77,6 +78,6 @@
         else
         {
             Console.WriteLine($"Error: {response.StatusCode}");
-        }
+        }*/
     }
 }
