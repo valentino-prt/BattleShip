@@ -1,0 +1,66 @@
+<style>
+    .board-table {
+        width: 40%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .board-table th{
+        padding: 0;
+        height: 30px;
+    }
+    .board-table td {
+        border: 1px solid #07ef35;
+        padding: 0;
+        height: 30px;
+    }
+
+    .board-table th,
+    .board-table td {
+        width: 30px;
+    }
+
+    .board-table th {
+        text-align: center;
+        background-color: #ffffff;
+    }
+
+    .board-table tr td:first-child {
+        text-align: center;
+        background-color: #ffffff;
+    }
+</style>
+
+<table class="board-table">
+    <thead>
+        <tr>
+            <th></th>
+            @for (int i = 1; i <= 10; i++)
+            {
+                <th>@i</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (char row = 'A'; row <= 'J'; row++)
+        {
+            <tr>
+                <td>@row</td>
+                @for (int col = 1; col <= 10; col++)
+                {
+                    int currentCol = col;
+                    char currentRow = row;
+
+                    <td @onclick="() => CellClicked(currentRow, currentCol)"></td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private void CellClicked(char row, int col)
+    {
+        Console.WriteLine($"Cell {row}{col} was clicked");
+    }
+}

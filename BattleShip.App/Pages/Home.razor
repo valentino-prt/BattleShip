@@ -1,7 +1,26 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<h3>Home</h3>
 
-<h1>Hello, world!</h1>
+<div class="boards-container">
+    <div>
+        <h5>Player 1 Board</h5>
+        <Board />
+    </div>
 
-Welcome to your new app.
+    <div>
+        <h5>Player 2 Board</h5>
+        <Board />
+    </div>
+</div>
+
+<style>
+    .boards-container {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .boards-container > div {
+        margin: 10px;
+    }
+</style>
