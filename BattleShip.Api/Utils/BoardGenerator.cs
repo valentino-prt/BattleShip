@@ -5,11 +5,11 @@ namespace BattleShip.Api.Utils;
 
 public class BoardGenerator
 {
-    private static readonly Random _random = new Random();
+    private static readonly Random _random = new();
 
     public static Board GenerateBoard()
     {
-        Board board = new Board();
+        Board board = new();
 
         var shipTypes = new List<ShipType>
             {

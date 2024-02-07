@@ -1,15 +1,11 @@
 ﻿namespace BattleShip.Models;
 
-public class AttackResult
+public class AttackResult(AttackOutcome outcome, List<int> coordinates, string? shipName = null)
 {
-    public AttackOutcome Outcome { get; set; }
-    public string ShipName { get; set; }
+    public AttackOutcome Outcome { get; set; } = outcome;
+    public string? ShipName { get; set; } = shipName;
 
-    public AttackResult(AttackOutcome outcome, string shipName = null)
-    {
-        Outcome = outcome;
-        ShipName = shipName;
-    }
+    public List<int> Coordinates { get; set; } = coordinates;
 }
 
 public enum AttackOutcome

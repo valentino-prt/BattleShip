@@ -10,7 +10,7 @@ public class Board
 
     public char[,] grid { get; set; } // grid of the board
 
-    public List<Ship> Ships = new List<Ship>(); // list of ships on the board, now private
+    public List<Ship> Ships = new(); // list of ships on the board, now private
 
     public int attacks { get; set; } // number of attacks made on the board
 

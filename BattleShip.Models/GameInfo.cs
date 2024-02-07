@@ -4,16 +4,17 @@ public class GameInfo
 {
     public Guid GameId { get; set; }
     public List<Ship> Ships { get; set; }
+    public string? Winner { get; set; }
+    public AttackResult? LastPlayerAttackResult { get; set; } // Dernier résultat d'attaque du joueur humain
+    public AttackResult? LastAutoPlayerAttackResult { get; set; } // Dernier résultat d'attaque de l'AutoPlayer
 
-    public String? Winner { get; set; }
 
-    public AttackResult? LastAttackResult { get; set; }
-
-    public GameInfo(Guid gameId, List<Ship> ships, String? winner = null, AttackResult? lastAttackResult = null)
+    public GameInfo(Guid gameId, List<Ship> ships, string? winner = null, AttackResult? lastPlayerAttackResult = null, AttackResult? lastAutoPlayerAttackResult = null)
     {
         GameId = gameId;
         Ships = ships;
         Winner = winner;
-        LastAttackResult = lastAttackResult;
+        LastPlayerAttackResult = lastPlayerAttackResult;
+        LastAutoPlayerAttackResult = lastAutoPlayerAttackResult;
     }
 }
