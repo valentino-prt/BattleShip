@@ -1,10 +1,12 @@
 @page "/"
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@using BattleShip.Models;
+
 
 <h1>Welcome to BattleShip!</h1>
 
-<button @onclick="StartGame">Start</button>
+                <button @onclick="StartGame">Start</button>
 
 @code {
     private async Task StartGame()
@@ -14,8 +16,13 @@
         response.EnsureSuccessStatusCode();
         if (response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadFromJsonAsync<GameInitInfo>();
             Console.WriteLine(content);
+            if (content != null)
+            {
+                Console.WriteLine(content.GameId);
+                Console.WriteLine(content.Ships);
+                GameState.InitializeInstance(content.GameId, new char[10,10], new char[10,10]);            }
         }
         else
         {
