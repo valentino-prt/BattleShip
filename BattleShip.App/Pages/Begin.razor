@@ -1,13 +1,12 @@
 @page "/"
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
-@using System.Text.Json;
 @using BattleShip.Models;
 
 
 <h1>Welcome to BattleShip!</h1>
 
-<button @onclick="StartGame">Start</button>
+                <button @onclick="StartGame">Start</button>
 
 @code {
     private async Task StartGame()
@@ -23,8 +22,7 @@
             {
                 Console.WriteLine(content.GameId);
                 Console.WriteLine(content.Ships);
-                GameState gamestate = new GameState(gameResponse.GameId, gameResponse.Ships);
-            }
+                GameState.InitializeInstance(content.GameId, new char[10,10], new char[10,10]);            }
         }
         else
         {
