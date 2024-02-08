@@ -59,6 +59,13 @@
                 {
                     int currentCol = col;
                     char currentRow = row;
+                    char cell = Table[col - 1, (int)row - 'A'];
+                    if(Table[col - 1, (int)row - 'A'] != 0)
+                    {
+                        Console.Write(cell);
+                        <td style="background-color: red">@cell</td>
+                        continue;
+                    }
 
                     <td @onclick="() => CellClicked(currentRow, currentCol)"></td>
                 }
@@ -68,6 +75,9 @@
 </table>
 
 @code {
+    [Parameter]
+    public char[,] Table { get; set; }
+    
     private async Task CellClicked(char row, int col)
     {
         Console.WriteLine($"Cell {row}{col} was clicked");
@@ -86,8 +96,10 @@
         jsonContent);
         if (response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadFromJsonAsync<GamePlayInfo>();
             Console.WriteLine(content);
+            //TODO afficer historique de l'action
+            
         }
         else
         {

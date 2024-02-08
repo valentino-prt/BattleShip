@@ -5,12 +5,12 @@
 <div class="boards-container">
     <div>
         <h5>Player 1 Board</h5>
-        <Board />
+        <Board Table="UserBoard"/>
     </div>
 
     <div>
         <h5>Player 2 Board</h5>
-        <Board />
+        <Board Table="AIBoard"/>
     </div>
 </div>
 
@@ -24,3 +24,11 @@
         margin: 10px;
     }
 </style>
+@code{
+
+    [Parameter]
+    public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
+    [Parameter]
+    public char[,] AIBoard { get; set; } = GameState.Instance.AIBoard;
+
+}
