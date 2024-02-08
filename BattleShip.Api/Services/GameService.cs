@@ -14,9 +14,10 @@ public class GameService : IGameService
         Game newGame = new();
         Games.Add(newGame);
 
-        // Initialiser les navires ici ou dans le constructeur de Game selon votre implémentation
-        return new GameInitInfo(newGame.Id, newGame.Boards[0].Ships);
-    }
+            // Initialiser les navires ici ou dans le constructeur de Game selon votre implémentation
+            return new GameInitInfo{GameId = newGame.Id, Ships = newGame.Boards[0].Ships};
+        }
+
 
     public GamePlayInfo Attack(Guid gameId, int x, int y)
     {
