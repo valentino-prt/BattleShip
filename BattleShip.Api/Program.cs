@@ -1,23 +1,19 @@
-using BattleShip.Api.Models;
 using BattleShip.Api.Services;
-using Microsoft.AspNetCore.Mvc;
-using BattleShip.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IGameService, GameService>();
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowMyOrigin",
-    builder =>
-    {
-        builder.WithOrigins("http://localhost:5051")
-               .AllowAnyHeader()
-               .AllowAnyMethod();
-    });
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5051")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
 });
 
 
@@ -33,32 +29,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowMyOrigin");
 
-
-// Endpoint pour créer une nouvelle partie
-app.MapPost("/games", (IGameService gameService) =>
-{
-    GameInitInfo gameInfo = gameService.CreateGame();
-    return TypedResults.Ok(gameInfo);
-})
-.WithName("CreateGame")
-.WithOpenApi();
-
-// Endpoint pour attaquer une case
-app.MapPut("/games/{gameId}/attack", (Guid gameId, [FromBody] AttackRequest request, IGameService gameService) =>
-{
-    try
-    {
-        GamePlayInfo result = gameService.Attack(gameId, request.X, request.Y);
-        return TypedResults.Ok(result);
-    }
-    catch (ArgumentException ex)
-    {
-        return Results.NotFound(ex.Message);
-    }
-})
-.WithName("Attack")
-.WithOpenApi();
-
+app.MapBattleShipHttpEndpoints();
 
 app.Run();
 
