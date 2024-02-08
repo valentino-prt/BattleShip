@@ -1,25 +1,14 @@
 ﻿namespace BattleShip.Models;
 
-public class Ship
+public class Ship(ShipType type, int x, int y, Direction direction)
 {
-    public int X { get; set; } // X coordinate
-    public int Y { get; set; } // Y coordinate
-    public ShipType Type { get; set; } // Type of the ship
-    public Direction Direction { get; set; } // Direction of the ship
+    public int X { get; set; } = x; // X coordinate
+    public int Y { get; set; } = y; // Y coordinate
+    public ShipType Type { get; set; } = type; // Type of the ship
+    public Direction Direction { get; set; } = direction; // Direction of the ship
 
-    public int Hits { get; set; } // Number of hits on the ship
+    public int Hits { get; set; } = 0; // Number of hits on the ship
 
-
-
-    public Ship(ShipType type, int x, int y, Direction direction)
-    {
-        Type = type;
-        X = x;
-        Y = y;
-        Direction = direction;
-        Hits = 0;
-
-    }
 
     public int Length => Type switch
     {
@@ -44,5 +33,5 @@ public enum ShipType
 public enum Direction
 {
     Horizontal,
-    Vertical,
+    Vertical
 }

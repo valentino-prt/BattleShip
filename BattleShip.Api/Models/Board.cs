@@ -4,42 +4,33 @@ namespace BattleShip.Api.Models;
 
 public class Board
 {
+    public readonly int Height = 10;
 
-    public readonly int width = 10;
-    public readonly int height = 10;
-
-    public char[,] grid { get; set; } // grid of the board
+    public readonly int Width = 10;
 
     public List<Ship> Ships = new(); // list of ships on the board, now private
-
-    public int attacks { get; set; } // number of attacks made on the board
-
 
 
     public Board()
     {
-        this.grid = InitializeBoard();
-        this.attacks = 0;
-
+        Grid = InitializeBoard();
+        attacks = 0;
     }
+
+    public char[,] Grid { get; set; } // grid of the board
+
+    public int attacks { get; set; } // number of attacks made on the board
 
     public void PrintBoard()
     {
-
         Console.Write("  ");
-        for (var col = 0; col < width; col++)
-        {
-            Console.Write($"\t{col}");
-        }
+        for (var col = 0; col < Width; col++) Console.Write($"\t{col}");
         Console.WriteLine();
 
-        for (var i = 0; i < width; i++)
+        for (var i = 0; i < Width; i++)
         {
             Console.Write($"{i} |");
-            for (var j = 0; j < height; j++)
-            {
-                Console.Write($"\t{(grid[i, j] == '\0' ? '.' : grid[i, j])}");
-            }
+            for (var j = 0; j < Height; j++) Console.Write($"\t{(Grid[i, j] == '\0' ? '.' : Grid[i, j])}");
             Console.WriteLine();
         }
     }
@@ -47,14 +38,10 @@ public class Board
 
     private char[,] InitializeBoard()
     {
-        var board = new char[width, height];
-        for (var i = 0; i < width; i++)
-        {
-            for (var j = 0; j < height; j++)
-            {
-                board[i, j] = '\0';
-            }
-        }
+        var board = new char[Width, Height];
+        for (var i = 0; i < Width; i++)
+        for (var j = 0; j < Height; j++)
+            board[i, j] = '\0';
         return board;
     }
 
@@ -69,19 +56,10 @@ public class Board
 
     private void UpdateGridWithShip(Ship ship)
     {
-        for (int i = 0; i < ship.Length; i++)
-        {
+        for (var i = 0; i < ship.Length; i++)
             if (ship.Direction == Direction.Horizontal)
-            {
-                grid[ship.X + i, ship.Y] = (this.Ships.Count - 1).ToString()[0];
-            }
+                Grid[ship.X + i, ship.Y] = (Ships.Count - 1).ToString()[0];
             else // Direction.Vertical
-            {
-                grid[ship.X, ship.Y + i] = (this.Ships.Count - 1).ToString()[0];
-            }
-        }
+                Grid[ship.X, ship.Y + i] = (Ships.Count - 1).ToString()[0];
     }
-
-
 }
-
