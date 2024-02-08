@@ -1,6 +1,9 @@
 @page "/"
 @inject HttpClient httpClient
 @inject NavigationManager navigationManager
+@using System.Text.Json;
+@using BattleShip.Models;
+
 
 <h1>Welcome to BattleShip!</h1>
 
@@ -14,8 +17,14 @@
         response.EnsureSuccessStatusCode();
         if (response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadFromJsonAsync<GameInitInfo>();
             Console.WriteLine(content);
+            if (content != null)
+            {
+                Console.WriteLine(content.GameId);
+                Console.WriteLine(content.Ships);
+                GameState gamestate = new GameState(gameResponse.GameId, gameResponse.Ships);
+            }
         }
         else
         {

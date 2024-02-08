@@ -1,4 +1,8 @@
 @inject HttpClient Http
+@using System.Text.Json;
+@using BattleShip.Models;
+@using System.Text
+
 
 <style>
     .board-table {
@@ -66,10 +70,19 @@
     {
         // Handle the click event here
         Console.WriteLine($"Cell {row}{col} was clicked");
+        using StringContent jsonContent = new(
+        JsonSerializer.Serialize(new 
+        {
+            x = row,
+            y = col
+        }),
+        Encoding.UTF8,
+        "application/json");
 
-        // Send a GET request to your API
-        /*var response = await Http.GetAsync($"http://localhost:5143/api/cellClicked?row={row}&col={col}");
-
+        // Send a POST request to your API
+        using HttpResponseMessage response = await Http.PutAsync(
+        "http://localhost:5143/games",
+        jsonContent);
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -78,6 +91,6 @@
         else
         {
             Console.WriteLine($"Error: {response.StatusCode}");
-        }*/
+        }
     }
 }
