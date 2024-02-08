@@ -1,6 +1,8 @@
-﻿namespace BattleShip.Api.Services;
+﻿using BattleShip.Api.Models;
 using BattleShip.Models;
-using BattleShip.Api.Models;
+
+namespace BattleShip.Api.Services;
+
 public interface IGameService
 {
     GameInitInfo CreateGame();
