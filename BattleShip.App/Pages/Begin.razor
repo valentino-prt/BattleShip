@@ -20,7 +20,7 @@
             Console.WriteLine(content);
             if (content != null)
             {
-                char [,] playerBoard = new char[10, 10];
+                var playerBoard = new char[10, 10];
                 
                 Console.WriteLine(content.GameId);
                 Console.WriteLine(content.Ships);
@@ -28,19 +28,22 @@
                 {
                     Console.WriteLine(Ship.Y);
                     Console.WriteLine(Ship.X);
-                    if(Ship.Direction == Direction.Horizontal)
+                    switch (Ship.Direction)
                     {
-                        for (int i = 0; i < Ship.Length; i++)
-                        {
-                            playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
-                        }
-                    }
-                    else if (Ship.Direction == Direction.Vertical)
-                    {
-                        for (int i = 0; i < Ship.Length; i++)
-                        {
-                            playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
-                        }
+                        case Direction.Horizontal:
+                            for (var i = 0; i < Ship.Length; i++)
+                            {
+                                playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
+                            }
+                            break;
+                        case Direction.Vertical:
+                            for (var i = 0; i < Ship.Length; i++)
+                            {
+                                playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
+                            }
+                            break;
+                        default:
+                            return;
                     }
                 }
                 GameState.InitializeInstance(content.GameId, playerBoard, new char[10,10]);            }
