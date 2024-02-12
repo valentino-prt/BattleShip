@@ -43,7 +43,7 @@
     <thead>
         <tr>
             <th></th>
-            @for (int i = 1; i <= 10; i++)
+@for (var i = 1; i <= 10; i++)
             {
                 var ii = i;
                 <th>@ii</th>
@@ -51,16 +51,16 @@
         </tr>
     </thead>
     <tbody>
-        @for (char row = 'A'; row <= 'J'; row++)
+        @for (var row = 'A'; row <= 'J'; row++)
         {
             <tr>
                 <td>@row</td>
-                @for (int col = 1; col <= 10; col++)
+                @for (var col = 0; col <= 9; col++)
                 {
-                    int currentCol = col;
-                    char currentRow = row;
-                    char cell = Table[col - 1, (int)row - 'A'];
-                    if(Table[col - 1, (int)row - 'A'] != 0)
+                    var currentCol = col;
+                    var currentRow = row;
+                    var cell = Table[col, (int)row - 'A'];
+                    if(Table[col, (int)row - 'A'] != 0)
                     {
                         Console.Write(cell);
                         <td>@cell</td>
@@ -109,7 +109,7 @@
                 {
                     elem = 'X';
                 }
-                await OnUpdate.InvokeAsync((col - 1, (int)row - 'A', elem));
+                await OnUpdate.InvokeAsync((col, (int)row - 'A', elem));
             }
         }
         else
