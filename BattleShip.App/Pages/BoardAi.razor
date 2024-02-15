@@ -25,13 +25,19 @@
                     var currentCol = col;
                     var currentRow = row;
                     var cell = Table[col, (int)row - 'A' ];
-                    if(Table[currentCol, (int)currentRow - 'A'] != 0)
+                    switch (cell)
                     {
-                        <td>@cell</td>
-                        continue;
-                    }
+                        case 'X':
+                            <td style="background-color: red" @onclick="() => CellClicked(currentRow, currentCol)">X</td>
+                            break;
+                        case 'O':
+                            <td @onclick="() => CellClicked(currentRow, currentCol)">X</td>
+                            break;
+                        default:
+                            <td style="background-color: white" @onclick="() => CellClicked(currentRow, currentCol)" ></td>
+                            break;
 
-                    <td @onclick="() => CellClicked(currentRow, currentCol)"></td>
+                    }
                 }
             </tr>
         }

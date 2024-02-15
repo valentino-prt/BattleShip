@@ -19,14 +19,20 @@
                 var currentCol = col;
                 var currentRow = (int)row - 'A';
                 var cell = Table[currentCol, currentRow];
-                if(cell != '\0')
+                if(cell == '\0')
+                {
+                    <td style="background-color: white"></td>
+                    continue;
+                } else if( cell == 'X')
+                {
+                    <td style="background-color: red">X</td>
+                    continue;
+                } else if (cell == 'O')
+                {
+                    <td>X</td>
+                } else
                 {
                     <td style="background-color: darkblue"></td>
-                    continue;
-                }
-                else
-                {
-                    <td></td>
                     continue;
                 }
             }
