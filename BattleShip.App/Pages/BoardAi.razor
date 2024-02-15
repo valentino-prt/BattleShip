@@ -4,41 +4,6 @@
 @using BattleShip.Models;
 @using System.Text
 
-
-
-<style>
-    .board-table {
-        width: 40%;
-        border-collapse: collapse;
-        table-layout: fixed;
-    }
-
-    .board-table th{
-        padding: 0;
-        height: 30px;
-    }
-    .board-table td {
-        border: 1px solid #07ef35;
-        padding: 0;
-        height: 30px;
-    }
-
-    .board-table th,
-    .board-table td {
-        width: 30px;
-    }
-
-    .board-table th {
-        text-align: center;
-        background-color: #ffffff;
-    }
-
-    .board-table tr td:first-child {
-        text-align: center;
-        background-color: #ffffff;
-    }
-</style>
-
 <table class="board-table">
     <thead>
         <tr>
@@ -62,7 +27,6 @@
                     var cell = Table[col, (int)row - 'A' ];
                     if(Table[currentCol, (int)currentRow - 'A'] != 0)
                     {
-                        Console.Write(cell);
                         <td>@cell</td>
                         continue;
                     }
