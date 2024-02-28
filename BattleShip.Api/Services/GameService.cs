@@ -1,6 +1,7 @@
 ﻿using BattleShip.Api.Hubs;
 using BattleShip.Api.Models;
 using BattleShip.Api.Services.Behaviors;
+using BattleShip.Api.Utils;
 using BattleShip.Models;
 using BattleShip.Models.Response;
 using Microsoft.AspNetCore.SignalR;
@@ -10,13 +11,14 @@ namespace BattleShip.Api.Services;
 
 public class GameService
 {
-    private readonly IHubContext<GameHub> _hubContext;
+    private readonly ConnectionMapping _connectionMapping;
+    private readonly IHubContext<PlayerHub> _hubContext;
     private readonly Dictionary<Guid, GameSession> _sessions = new();
 
-
-    public GameService(IHubContext<GameHub> hubContext)
+    public GameService(IHubContext<PlayerHub> hubContext, ConnectionMapping connectionMapping)
     {
         _hubContext = hubContext;
+        _connectionMapping = connectionMapping;
     }
 
 
@@ -119,7 +121,6 @@ public class GameService
                 }
             }
 
-
             // // Si le mode contre l'IA est activé, simuler l'attaque de l'IA ici
             if (opponent.Id == Guid.Empty)
             {
@@ -139,13 +140,18 @@ public class GameService
                 }
 
                 // Envoyer le résultat de l'attaque de l'IA au joueur humain
-                await _hubContext.Clients.Clients(player.Id.ToString())
-                    .SendAsync("ReceiveAttackResult", aiAttackResult);
+                var playerConnectionId = _connectionMapping.GetConnectionId(player.Id);
+                if (playerConnectionId != null)
+                    await _hubContext.Clients.Client(playerConnectionId)
+                        .SendAsync("ReceiveAttackResult", aiAttackResult);
             }
             else
             {
-                await _hubContext.Clients.Clients(opponent.Id.ToString())
-                    .SendAsync("ReceiveAttackResult", attackResult);
+                // Envoyer le résultat de l'attaque au joueur adverse
+                var opponentConnectionId = _connectionMapping.GetConnectionId(opponent.Id);
+                if (opponentConnectionId != null)
+                    await _hubContext.Clients.Client(opponentConnectionId)
+                        .SendAsync("ReceiveAttackResult", attackResult);
                 SwitchPlayer(player, opponent);
             }
 
@@ -180,7 +186,6 @@ public class GameService
         player1.isTurn = !player1.isTurn;
         player2.isTurn = !player2.isTurn;
     }
-
 
     private class GameSession
     {
