@@ -11,7 +11,7 @@ public class GameService
     private readonly Dictionary<Guid, GameSession> _sessions = new();
 
 
-    private AttackResponse PerformAttack(Board oppnentBoard, int x, int y)
+    private AttackResponse PerformPlayerAttack(Board oppnentBoard, int x, int y)
     {
         var val = oppnentBoard.Grid[x, y];
         switch (val)
@@ -29,6 +29,29 @@ public class GameService
             default:
                 // Hit
                 oppnentBoard.Grid[x, y] = 'X';
+                return new AttackResponse(AttackOutcome.Hit, null, false, GameStatus.InProgress);
+        }
+    }
+
+    private AttackResponse PerformAittack(Board opponentBoard, Player aiplayer)
+    {
+        var (x, y) = aiplayer.Behavior.ChooseAttackCoordinates(opponentBoard);
+        var val = opponentBoard.Grid[x, y];
+        switch (val)
+        {
+            case '\0':
+                // Miss
+                opponentBoard.Grid[x, y] = 'O';
+                return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress);
+            case 'O':
+                // Already attacked
+                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress);
+            case 'X':
+                // Already attacked
+                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress);
+            default:
+                // Hit
+                opponentBoard.Grid[x, y] = 'X';
                 return new AttackResponse(AttackOutcome.Hit, null, false, GameStatus.InProgress);
         }
     }
@@ -72,7 +95,7 @@ public class GameService
 
         if (player.isTurn)
         {
-            var attackResult = PerformAttack(opponent.Board, x, y);
+            var attackResult = PerformPlayerAttack(opponent.Board, x, y);
 
             if (attackResult.Result == AttackOutcome.Hit)
             {
@@ -90,10 +113,30 @@ public class GameService
             // // Envoyer le résultat de l'attaque à l'adversaire
 
             // // Si le mode contre l'IA est activé, simuler l'attaque de l'IA ici
-            //     // Simuler l'attaque de l'IA
-            //     // Envoyer le résultat de l'attaque de l'IA au joueur humain
+            if (opponent.Id == Guid.Empty)
+            {
+                var aiPlayer = opponent;
+                var aiAttackResult = PerformAittack(player.Board, aiPlayer);
+                if (aiAttackResult.Result == AttackOutcome.Hit)
+                {
+                    var ship = player.Ships.Find(s => s.Name.Equals(aiAttackResult.ShipName));
+                    if (ship != null)
+                        ship.Hits++;
+                    if (ship.Hits == ship.Length)
+                    {
+                        aiAttackResult.Sunk = true;
+                        var isWinner = CheckGameStatus(player);
+                        if (isWinner) aiAttackResult.GameStatus = GameStatus.Completed;
+                    }
+                }
 
-            SwitchPlayer(player, opponent);
+                // Envoyer le résultat de l'attaque de l'IA au joueur humain
+            }
+            else
+            {
+                SwitchPlayer(player, opponent);
+            }
+
             return attackResult;
         }
 

@@ -1,6 +1,4 @@
-using BattleShip.Models;
-
-namespace BattleShip.Api.Api;
+namespace BattleShip.Models;
 
 public class InitializeGameRequest
 {
