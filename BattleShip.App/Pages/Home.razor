@@ -1,16 +1,17 @@
 ﻿@page "/home"
+@using BattleShip.Models
 
 <h3>Home</h3>
 
 <div class="boards-container">
     <div>
         <h5>Player 1 Board</h5>
-        <Board Table="UserBoard" OnUpdate="(a) => UpdateUserBoard(a.col,a.row,a.value)"/>
+        <BoardUser Table="UserBoard" />
     </div>
 
     <div>
         <h5>Player 2 Board</h5>
-        <Board Table="AIBoard" OnUpdate="(a) => UpdateAIBoard(a.col,a.row,a.value)"/>
+        <BoardAi Table="AIBoard" OnUpdate="(a) => UpdateAIBoard(a.UserResult,a.AiResult)"/>
     </div>
 </div>
 
@@ -31,16 +32,30 @@
     [Parameter]
     public char[,] AIBoard { get; set; } = GameState.Instance.AIBoard;
     
-    private void UpdateUserBoard(int col, int row, char value)
+    private void UpdateUserBoard(AttackResult AiAttack)
     {
-        UserBoard[col, row] = value;
+        var value = 'O';
+
+        if (AiAttack.Outcome == AttackOutcome.Hit)
+        {
+            value = 'X';
+        }
+        UserBoard[AiAttack.Coordinates[0], AiAttack.Coordinates[1]] = value;
         StateHasChanged();
     }
 
-    private void UpdateAIBoard(int col, int row, char value)
+    private void UpdateAIBoard(AttackResult PlayerAttack, AttackResult AiAttack)
     {
-        AIBoard[col, row] = value;
-        StateHasChanged();
-    }
+        Console.Write(PlayerAttack);
+        Console.Write(AiAttack);
+        var value = 'O';
 
+        if (PlayerAttack.Outcome == AttackOutcome.Hit)
+        {
+            value = 'X';
+        }
+        AIBoard[PlayerAttack.Coordinates[0], PlayerAttack.Coordinates[1]] = value;
+        StateHasChanged();
+        UpdateUserBoard(AiAttack);
+    }
 }

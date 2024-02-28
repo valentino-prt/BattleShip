@@ -1,0 +1,66 @@
+﻿<style>
+    .board-table {
+        width: 40%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .board-table th{
+        padding: 0;
+        height: 30px;
+    }
+    .board-table td {
+        border: 1px solid #07ef35;
+        padding: 0;
+        height: 30px;
+    }
+
+    .board-table th,
+    .board-table td {
+        width: 30px;
+    }
+
+    .board-table th {
+        text-align: center;
+        background-color: #ffffff;
+    }
+
+    .board-table tr td:first-child {
+        text-align: center;
+        background-color: #ffffff;
+    }
+</style>
+
+<table class="board-table">
+    <thead>
+    <tr>
+        <th></th>
+        @for (var i = 1; i <= 10; i++)
+        {
+            var ii = i;
+            <th>@ii</th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    @for (var row = 'A'; row <= 'J'; row++)
+    {
+        <tr>
+            <td>@row</td>
+            @for (var col = 0; col <= 9; col++)
+            {
+                var currentCol = col;
+                var currentRow = (int)row - 'A';
+                var cell = Table[currentCol, currentRow];
+                <td>@cell</td>
+                continue;
+            }
+        </tr>
+    }
+    </tbody>
+</table>
+@code
+{
+    [Parameter]
+    public char[,] Table { get; set; }
+}

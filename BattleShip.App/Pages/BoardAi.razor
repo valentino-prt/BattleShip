@@ -59,8 +59,8 @@
                 {
                     var currentCol = col;
                     var currentRow = row;
-                    var cell = Table[col, (int)row - 'A'];
-                    if(Table[col, (int)row - 'A'] != 0)
+                    var cell = Table[col, (int)row - 'A' ];
+                    if(Table[currentCol, (int)currentRow - 'A'] != 0)
                     {
                         Console.Write(cell);
                         <td>@cell</td>
@@ -78,7 +78,7 @@
     [Parameter]
     public char[,] Table { get; set; }
     [Parameter]
-    public EventCallback<(int col, int row, char value)> OnUpdate { get; set; }
+    public EventCallback<(AttackResult UserResult, AttackResult AiResult)> OnUpdate { get; set; }
 
     private async Task CellClicked(char row, int col)
     {
@@ -86,8 +86,8 @@
         using StringContent jsonContent = new(
         JsonSerializer.Serialize(new 
         {
-            x = (int)row % 32,
-            y = col
+            x =  col,
+            y =(int)row - 'A'
         }),
         Encoding.UTF8,
         "application/json");
@@ -102,14 +102,8 @@
             Console.WriteLine(content);
             //TODO afficer historique de l'action
             if (OnUpdate.HasDelegate)
-            {                    
-                char elem = 'O';
-
-                if (content.LastPlayerAttackResult.Outcome == AttackOutcome.Hit)
-                {
-                    elem = 'X';
-                }
-                await OnUpdate.InvokeAsync((col, (int)row - 'A', elem));
+            {                   
+                await OnUpdate.InvokeAsync((content.LastPlayerAttackResult, content.LastAutoPlayerAttackResult));
             }
         }
         else
