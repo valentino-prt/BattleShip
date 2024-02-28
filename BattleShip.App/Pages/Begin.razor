@@ -8,15 +8,36 @@
 
 
 <h1>Welcome to BattleShip!</h1>
-
-<button @onclick="StartGame">Start</button>
-
-@code {
-
-    private async Task StartGame()
+<div class="div-menu">
+    <button @onclick="ToggleDropdown" class="menu-button">Create a new game</button>
+    @if(showDropdown)
     {
+        <div class="dropdown-menu">
+            <button class="dropdown-item" @onclick="CreateGameIa">IA</button>
+        </div>
+    }
+    <button @onclick="JoinGame" class="menu-button">Join a game</button>
+    @if(showJoinGame)
+    {
+        <div class="dropdown-menu">
+            <input type="text" placeholder="Enter the game code" />
+            <button class="dropdown-item">Join</button>
+        </div>
+    }
+</div>
+@code {
+    private bool showDropdown = false;
+    private bool showJoinGame = false;
+
+    private void ToggleDropdown()
+    {
+        showDropdown = !showDropdown;
+    }
+    private async Task CreateGameIa()
+    {
+        var playerId = Guid.NewGuid();
         using StringContent jsonContent = new(
-            JsonSerializer.Serialize(new InitializeGameRequest(Guid.NewGuid(), new GameSettings(GameMode.SoloVsAI, AIDifficulty.Easy))),
+            JsonSerializer.Serialize(new InitializeGameRequest(playerId, new GameSettings(GameMode.SoloVsAI, AIDifficulty.Easy))),
             Encoding.UTF8,
             "application/json");
 
@@ -25,12 +46,9 @@
         if (response.IsSuccessStatusCode)
         {
             var gameInfo = await response.Content.ReadFromJsonAsync<InitializeGameResponse>();
-            Console.Write(gameInfo);
             var playerBoard = new char[10, 10];
             foreach (var Ship in gameInfo.Ships)
             {
-                Console.WriteLine(Ship.Y);
-                Console.WriteLine(Ship.X);
                 switch (Ship.Direction)
                 {
                     case Direction.Horizontal:
@@ -45,19 +63,23 @@
                         {
                             playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
                         }
-
                         break;
                     default:
                         return;
                 }
             }
-            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10]);
+            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId);
             navigationManager.NavigateTo("/home");
         }
         else
         {
             Console.WriteLine($"Error: {response.StatusCode}");
         }
+    }
+
+    private async Task JoinGame()
+    {
+        showJoinGame = !showJoinGame;
     }
 
 }

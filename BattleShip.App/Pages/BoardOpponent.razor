@@ -3,6 +3,7 @@
 @using System.Text.Json;
 @using BattleShip.Models;
 @using System.Text
+@using BattleShip.Models.Response
 
 <table class="board-table">
     <thead>
@@ -46,33 +47,29 @@
 @code {
 
     [Parameter] public char[,] Table { get; set; }
-    //[Parameter]
-    //public EventCallback<(AttackResult UserResult, AttackResult AiResult)> OnUpdate { get; set; }
+    [Parameter]
+    public EventCallback<(AttackResponse UserResult, AttackResponse AiResult)> OnUpdate { get; set; }
 
     private async Task CellClicked(char row, int col)
     {
         Console.WriteLine($"Cell {row}{col} was clicked");
         using StringContent jsonContent = new(
-            JsonSerializer.Serialize(new
-            {
-                x = col,
-                y = (int)row - 'A'
-            }),
+            JsonSerializer.Serialize(new AttackRequest(GameState.GameId,
+                GameState.PlayerId,
+                 col,
+                (int)row - 'A')),
             Encoding.UTF8,
             "application/json");
 
-        // Send a POST request to API
-        using HttpResponseMessage response = await Http.PutAsync(
-            $"http://localhost:5143/games/{GameState.GameId}/attack",
-            jsonContent);
+        var response = await Http.PostAsync("http://localhost:5143/attack", jsonContent);
         if (response.IsSuccessStatusCode)
         {
-            //var content = await response.Content.ReadFromJsonAsync<GamePlayInfo>();
-            //Console.WriteLine(content);
+            var content = await response.Content.ReadFromJsonAsync<AttackResponse>();
+            Console.WriteLine(content);
             //TODO afficer historique de l'action
-            //if (OnUpdate.HasDelegate)
+            if (OnUpdate.HasDelegate)
             {
-                // await OnUpdate.InvokeAsync((content.LastPlayerAttackResult, content.LastAutoPlayerAttackResult));
+                //await OnUpdate.InvokeAsync((content.LastPlayerAttackResult, content.LastAutoPlayerAttackResult));
             }
         }
         else

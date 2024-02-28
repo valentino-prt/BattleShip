@@ -7,7 +7,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-GameState.InitializeInstance(Guid.NewGuid(), new char[10, 10], new char[10, 10]);
+GameState.InitializeInstance(Guid.NewGuid(), new char[10, 10], new char[10, 10], Guid.NewGuid());
 builder.Services.AddSingleton(GameState.Instance);
 
 await builder.Build().RunAsync();

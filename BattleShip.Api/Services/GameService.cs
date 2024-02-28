@@ -11,14 +11,14 @@ public class GameService
     private readonly Dictionary<Guid, GameSession> _sessions = new();
 
 
-    private AttackResponse PerformPlayerAttack(Board oppnentBoard, int x, int y)
+    private AttackResponse PerformPlayerAttack(Board opponentBoard, int x, int y)
     {
-        var val = oppnentBoard.Grid[x, y];
+        var val = opponentBoard.Grid[x, y];
         switch (val)
         {
             case '\0':
                 // Miss
-                oppnentBoard.Grid[x, y] = 'O';
+                opponentBoard.Grid[x, y] = 'O';
                 return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress);
             case 'O':
                 // Already attacked
@@ -28,14 +28,14 @@ public class GameService
                 return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress);
             default:
                 // Hit
-                oppnentBoard.Grid[x, y] = 'X';
+                opponentBoard.Grid[x, y] = 'X';
                 return new AttackResponse(AttackOutcome.Hit, null, false, GameStatus.InProgress);
         }
     }
 
-    private AttackResponse PerformAittack(Board opponentBoard, Player aiplayer)
+    private AttackResponse PerformAittack(Board opponentBoard, Player opponentPlayer)
     {
-        var (x, y) = aiplayer.Behavior.ChooseAttackCoordinates(opponentBoard);
+        var (x, y) = opponentPlayer.Behavior.ChooseAttackCoordinates(opponentBoard);
         var val = opponentBoard.Grid[x, y];
         switch (val)
         {
@@ -69,11 +69,13 @@ public class GameService
 
             var aiPlayer = new Player(Guid.Empty, behavior);
             session.Player2 = aiPlayer;
+            
+            _sessions.Add(session.Id, session);
             return new InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.InProgress);
         }
 
         _sessions.Add(session.Id, session);
-        return new InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.WaitingForOpponent);
+        return new  InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.WaitingForOpponent);
     }
 
 
