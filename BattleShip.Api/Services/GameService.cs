@@ -69,6 +69,7 @@ public class GameService
     public InitializeGameResponse InitializeGame(Guid creatorId, GameSettings gameSettings)
     {
         var player1 = new Player(creatorId);
+        player1.IsTurn = true;
         var session = new GameSession { Player1 = player1, GameSettings = gameSettings };
 
         if (gameSettings.Mode == GameMode.SoloVsAI)
@@ -79,33 +80,42 @@ public class GameService
 
             var aiPlayer = new Player(Guid.Empty, behavior);
             session.Player2 = aiPlayer;
-            
+
             _sessions.Add(session.Id, session);
             return new InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.InProgress);
         }
 
         _sessions.Add(session.Id, session);
-        return new  InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.WaitingForOpponent);
+        return new InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.WaitingForOpponent);
     }
 
 
     public TryJoinGameResponse TryJoinGame(Guid sessionId, Guid playerId)
     {
-        if (_sessions.TryGetValue(sessionId, out var session) && session.Player2 == null)
+        if (_sessions.TryGetValue(sessionId, out var session))
         {
-            var player2 = new Player(playerId);
-            session.Player2 = player2;
-            return new TryJoinGameResponse(sessionId, player2.Id, player2.Id, GameStatus.InProgress);
+            if (session.Player2 == null)
+            {
+                var player2 = new Player(playerId);
+                session.Player2 = player2;
+                // Successfully joined the game
+                return new TryJoinGameResponse(sessionId, player2.Id, player2.Ships, GameStatus.InProgress);
+            }
+
+            // Session already full
+            return new TryJoinGameResponse(sessionId, playerId, null, GameStatus.Full);
         }
 
-        return new TryJoinGameResponse(sessionId, playerId, null, GameStatus.WaitingForOpponent);
+        // If session does not exist or other error
+        return new TryJoinGameResponse(sessionId, playerId, null, GameStatus.DoesNotExist);
     }
+
 
     public async Task<AttackResponse> Attack(Guid gameId, Guid player_id, int x, int y)
     {
         var (player, opponent) = GetPlayers(gameId, player_id);
 
-        if (player.isTurn)
+        if (player.IsTurn)
         {
             var attackResult = PerformPlayerAttack(opponent.Board, x, y);
 
@@ -122,7 +132,7 @@ public class GameService
                 }
             }
 
-            // // Si le mode contre l'IA est activé, simuler l'attaque de l'IA ici
+            // Si le mode contre l'IA est activé, simuler l'attaque de l'IA ici
             if (opponent.Id == Guid.Empty)
             {
                 var aiPlayer = opponent;
@@ -184,8 +194,8 @@ public class GameService
 
     private static void SwitchPlayer(Player player1, Player player2)
     {
-        player1.isTurn = !player1.isTurn;
-        player2.isTurn = !player2.isTurn;
+        player1.IsTurn = !player1.IsTurn;
+        player2.IsTurn = !player2.IsTurn;
     }
 
     private class GameSession

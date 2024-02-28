@@ -1,9 +1,9 @@
 namespace BattleShip.Models.Response;
 
-public class TryJoinGameResponse(Guid sessionId, Guid player1Id, Guid? player2Id, GameStatus status)
+public class TryJoinGameResponse(Guid sessionId, Guid player2Id, List<Ship>? ships, GameStatus status)
 {
     public Guid SessionId { get; set; } = sessionId;
-    public Guid Player1Id { get; set; } = player1Id;
-    public Guid? Player2Id { get; set; } = player2Id;
+    public Guid Player2Id { get; set; } = player2Id;
+    public List<Ship>? Ships { get; set; } = ships;
     public GameStatus Status { get; set; } = status;
 }

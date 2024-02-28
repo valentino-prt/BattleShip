@@ -2,13 +2,6 @@ namespace BattleShip.Models.Response;
 
 public class AttackResponse
 {
-
-    public AttackOutcome Result { get; set; }
-    public string? ShipName { get; set; }
-    public bool Sunk { get; set; }
-    public GameStatus GameStatus { get; set; }
-
-
     public AttackResponse(AttackOutcome result, string? shipName, bool sunk, GameStatus gameStatus)
     {
         Result = result;
@@ -16,6 +9,11 @@ public class AttackResponse
         Sunk = sunk;
         GameStatus = gameStatus;
     }
+
+    public AttackOutcome Result { get; set; }
+    public string? ShipName { get; set; }
+    public bool Sunk { get; set; }
+    public GameStatus GameStatus { get; set; }
 }
 
 public enum GameStatus
@@ -23,7 +21,9 @@ public enum GameStatus
     WaitingForOpponent,
     ReadyToStart,
     InProgress,
-    Completed
+    Completed,
+    Full,
+    DoesNotExist
 }
 
 public enum AttackOutcome

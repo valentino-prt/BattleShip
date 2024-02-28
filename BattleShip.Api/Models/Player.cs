@@ -32,7 +32,7 @@ public class Player
     public Board Board { get; set; } // board of the player
     public List<Ship> Ships { get; set; } // ships of the player
 
-    public bool isTurn { get; set; }
+    public bool IsTurn { get; set; } = false; // is it the player's turn
 
     public IBehavior? Behavior { get; set; }
 }
