@@ -4,9 +4,9 @@ namespace BattleShip.Api.Models;
 
 public class Board
 {
-    public readonly int Height = 10;
+    public static readonly int Height = 10;
 
-    public readonly int Width = 10;
+    public static readonly int Width = 10;
 
     public Board()
     {

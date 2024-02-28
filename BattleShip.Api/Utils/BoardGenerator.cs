@@ -26,8 +26,8 @@ public class BoardGenerator
             while (!placed)
             {
                 // Generate random position and direction
-                var x = _random.Next(_board.Width);
-                var y = _random.Next(_board.Height);
+                var x = _random.Next(Board.Width);
+                var y = _random.Next(Board.Height);
                 var direction = _random.Next(2) == 0 ? Direction.Horizontal : Direction.Vertical;
 
                 // Create ship to be placed
@@ -53,7 +53,7 @@ public class BoardGenerator
         var shipEndY = ship.Y + (ship.Direction == Direction.Vertical ? ship.Length : 0);
 
         // Check if the ship fits within the board bounds
-        if (shipEndX > board.Width || shipEndY > board.Height)
+        if (shipEndX > Board.Width || shipEndY > Board.Height)
             return false;
 
         // Check for overlap with existing ships
@@ -63,7 +63,7 @@ public class BoardGenerator
             var currentY = ship.Y + (ship.Direction == Direction.Vertical ? i : 0);
 
             // Check if the current position is outside the board bounds
-            if (currentX >= board.Width || currentY >= board.Height)
+            if (currentX >= Board.Width || currentY >= Board.Height)
                 return false;
 
             // Check if any part of the ship overlaps with existing ships

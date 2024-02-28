@@ -1,4 +1,5 @@
 ﻿using BattleShip.Api.Models;
+using BattleShip.Api.Services.Behaviors;
 using BattleShip.Models;
 using BattleShip.Models.Response;
 using AttackOutcome = BattleShip.Models.Response.AttackOutcome;
@@ -39,7 +40,11 @@ public class GameService
 
         if (gameSettings.Mode == GameMode.SoloVsAI)
         {
-            var aiPlayer = new Player(Guid.Empty); // Represents the AI player
+            var behavior = gameSettings.Difficulty == AIDifficulty.Easy
+                ? (IBehavior)new RandomBehavior()
+                : new StrategicBehavior();
+
+            var aiPlayer = new Player(Guid.Empty, behavior);
             session.Player2 = aiPlayer;
             return new InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.InProgress);
         }
@@ -83,14 +88,10 @@ public class GameService
             }
 
             // // Envoyer le résultat de l'attaque à l'adversaire
-            // await _webSocketConnectionManager.SendMessageAsync(opponent.Id, JsonConvert.SerializeObject(attackResult));
-            //
+
             // // Si le mode contre l'IA est activé, simuler l'attaque de l'IA ici
-            // if (opponent.Id == Guid.Empty) // Supposons que Guid.Empty représente l'IA
             //     // Simuler l'attaque de l'IA
             //     // Envoyer le résultat de l'attaque de l'IA au joueur humain
-            //     await _webSocketConnectionManager.SendMessageAsync(player.Id,
-            //         JsonConvert.SerializeObject(aiAttackResult));
 
             SwitchPlayer(player, opponent);
             return attackResult;
@@ -131,7 +132,6 @@ public class GameService
         public Guid Id { get; } = Guid.NewGuid();
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
-
         public GameSettings GameSettings { get; set; }
     }
 }
