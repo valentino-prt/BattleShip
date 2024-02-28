@@ -13,8 +13,7 @@
 
     <div>
         <h5>Player 2 Board</h5>
-        <BoardOpponent Table="OpponentBoard" />
-                       <!--OnUpdate="(a) => UpdateAIBoard(a.UserResult,a.AiResult)"/>-->
+        <BoardOpponent Table="OpponentBoard" OnUpdate="(a) => UpdateOpponentBoard(a.UserResult, a.col, a.row)"/>
         <History></History>
         </div>
 </div>
@@ -36,7 +35,7 @@
     [Parameter]
     public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
     
-    /*private void UpdateUserBoard(AttackResult AiAttack)
+    /*private void UpdateUserBoard(AttackResponse AiAttack)
     {
         var value = 'O';
         switch (AiAttack.Outcome)
@@ -55,12 +54,12 @@
         StateHasChanged();
     }*/
 
-    /*private void UpdateAIBoard(AttackResponse PlayerAttack, AttackResponse AiAttack)
+    private void UpdateOpponentBoard(AttackResponse playerAttack, int col, int row)
     {
-        Console.Write(PlayerAttack);
-        Console.Write(AiAttack);
+        Console.Write(playerAttack);
+        Console.Write(playerAttack);
         var value = 'O';
-        switch (PlayerAttack.Result)
+        switch (playerAttack.Result)
         {
             case AttackOutcome.Hit:
                 value = 'X';
@@ -69,12 +68,12 @@
                 Console.Write("Sunk");
                 break;
             case AttackOutcome.AlreadyAttacked:
-                Console.WriteLine($"Error: Player Already Attacked {PlayerAttack.Coordinates[0]},{PlayerAttack.Coordinates[1]}");
+                Console.WriteLine($"Error: Player Already Attacked {col},{row}");
                 return;
         }
 
-        OpponentBoard[PlayerAttack.Coordinates[0], PlayerAttack.Coordinates[1]] = value;
+        OpponentBoard[col, row] = value;
         StateHasChanged();
-        UpdateUserBoard(AiAttack);
-    }*/
+        //UpdateUserBoard(AiAttack);
+    }
 }

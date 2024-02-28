@@ -21,9 +21,11 @@ public class GameService
         _connectionMapping = connectionMapping;
     }
 
-    private AttackResponse PerformPlayerAttack(Board opponentBoard, int x, int y)
+    private AttackResponse PerformPlayerAttack(Player opponent, int x, int y)
     {
+        var opponentBoard = opponent.Board;
         var val = opponentBoard.Grid[x, y];
+        
         switch (val)
         {
             case '\0':
@@ -39,13 +41,16 @@ public class GameService
             default:
                 // Hit
                 opponentBoard.Grid[x, y] = 'X';
-                return new AttackResponse(AttackOutcome.Hit, null, false, GameStatus.InProgress);
+                var shipname = opponent.Ships.Find(s => s.Name[0] == val)?.Name;
+
+                return new AttackResponse(AttackOutcome.Hit, shipname, false, GameStatus.InProgress);
         }
     }
 
-    private AttackResponse PerformAittack(Board opponentBoard, Player opponentPlayer)
+    private AttackResponse PerformAittack(Player opponent, Player aiPlayer)
     {
-        var (x, y) = opponentPlayer.Behavior.ChooseAttackCoordinates(opponentBoard);
+        var opponentBoard = opponent.Board;
+        var (x, y) = aiPlayer.Behavior.ChooseAttackCoordinates(opponentBoard);
         var val = opponentBoard.Grid[x, y];
         switch (val)
         {
@@ -62,7 +67,8 @@ public class GameService
             default:
                 // Hit
                 opponentBoard.Grid[x, y] = 'X';
-                return new AttackResponse(AttackOutcome.Hit, null, false, GameStatus.InProgress);
+                var shipname = opponent.Ships.Find(s => s.Name[0] == val)?.Name;
+                return new AttackResponse(AttackOutcome.Hit, shipname, false, GameStatus.InProgress);
         }
     }
 
@@ -117,7 +123,7 @@ public class GameService
 
         if (player.IsTurn)
         {
-            var attackResult = PerformPlayerAttack(opponent.Board, x, y);
+            var attackResult = PerformPlayerAttack(opponent, x, y);
 
             if (attackResult.Result == AttackOutcome.Hit)
             {
@@ -136,7 +142,7 @@ public class GameService
             if (opponent.Id == Guid.Empty)
             {
                 var aiPlayer = opponent;
-                var aiAttackResult = PerformAittack(player.Board, aiPlayer);
+                var aiAttackResult = PerformAittack(player, aiPlayer);
                 if (aiAttackResult.Result == AttackOutcome.Hit)
                 {
                     var ship = player.Ships.Find(s => s.Name.Equals(aiAttackResult.ShipName));

@@ -48,7 +48,7 @@
 
     [Parameter] public char[,] Table { get; set; }
     [Parameter]
-    public EventCallback<(AttackResponse UserResult, AttackResponse AiResult)> OnUpdate { get; set; }
+    public EventCallback<(AttackResponse UserResult, int col, int row)> OnUpdate { get; set; }
 
     private async Task CellClicked(char row, int col)
     {
@@ -66,10 +66,10 @@
         {
             var content = await response.Content.ReadFromJsonAsync<AttackResponse>();
             Console.WriteLine(content);
-            //TODO afficer historique de l'action
+            //TODO afficher historique de l'action
             if (OnUpdate.HasDelegate)
             {
-                //await OnUpdate.InvokeAsync((content.LastPlayerAttackResult, content.LastAutoPlayerAttackResult));
+                await OnUpdate.InvokeAsync((content, col, (int)row - 'A'));
             }
         }
         else
