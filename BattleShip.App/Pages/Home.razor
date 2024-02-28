@@ -1,17 +1,22 @@
 ﻿@page "/home"
+@using BattleShip.Models
+@using BattleShip.Models.Response
 
 <h3>Home</h3>
 
 <div class="boards-container">
     <div>
         <h5>Player 1 Board</h5>
-        <Board />
+        <BoardUser Table="UserBoard" />
+        <History></History>
     </div>
 
     <div>
         <h5>Player 2 Board</h5>
-        <Board />
-    </div>
+        <BoardOpponent Table="OpponentBoard" />
+                       <!--OnUpdate="(a) => UpdateAIBoard(a.UserResult,a.AiResult)"/>-->
+        <History></History>
+        </div>
 </div>
 
 <style>
@@ -24,3 +29,52 @@
         margin: 10px;
     }
 </style>
+@code{
+
+    [Parameter]
+    public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
+    [Parameter]
+    public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
+    
+    /*private void UpdateUserBoard(AttackResult AiAttack)
+    {
+        var value = 'O';
+        switch (AiAttack.Outcome)
+        {
+            case AttackOutcome.Hit:
+                value = 'X';
+                break;
+            case AttackOutcome.Sunk:
+                Console.Write("Sunk");
+                break;
+            case AttackOutcome.AlreadyAttacked:
+                Console.WriteLine($"Error: Player Already Attacked {AiAttack.Coordinates[0]},{AiAttack.Coordinates[1]}");
+                return;
+        }
+        UserBoard[AiAttack.Coordinates[0], AiAttack.Coordinates[1]] = value;
+        StateHasChanged();
+    }*/
+
+    /*private void UpdateAIBoard(AttackResponse PlayerAttack, AttackResponse AiAttack)
+    {
+        Console.Write(PlayerAttack);
+        Console.Write(AiAttack);
+        var value = 'O';
+        switch (PlayerAttack.Result)
+        {
+            case AttackOutcome.Hit:
+                value = 'X';
+                break;
+            case AttackOutcome.Sunk:
+                Console.Write("Sunk");
+                break;
+            case AttackOutcome.AlreadyAttacked:
+                Console.WriteLine($"Error: Player Already Attacked {PlayerAttack.Coordinates[0]},{PlayerAttack.Coordinates[1]}");
+                return;
+        }
+
+        OpponentBoard[PlayerAttack.Coordinates[0], PlayerAttack.Coordinates[1]] = value;
+        StateHasChanged();
+        UpdateUserBoard(AiAttack);
+    }*/
+}

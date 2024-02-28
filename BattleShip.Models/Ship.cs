@@ -1,10 +1,20 @@
 ﻿namespace BattleShip.Models;
 
-public class Ship(ShipType type, int x, int y, Direction direction)
+public class Ship
 {
-    public int X { get; set; } = x; // X coordinate
-    public int Y { get; set; } = y; // Y coordinate
-    private ShipType Type { get; } = type; // Type of the ship
+    public Ship(ShipType type, int x, int y, Direction direction)
+    {
+        Type = type;
+        X = x;
+        Y = y;
+        Direction = direction;
+    }
+
+    public int X { get; set; } // X coordinate
+    public int Y { get; set; } // Y coordinate
+    public ShipType Type { get; set; } // Type of the ship, must be public to match constructor parameter
+    public Direction Direction { get; set; } // Direction of the ship
+    public int Hits { get; set; } = 0; // Number of hits on the ship
 
     public string Name => Type switch
     {
@@ -15,11 +25,6 @@ public class Ship(ShipType type, int x, int y, Direction direction)
         ShipType.Carrier => "Carrier",
         _ => "Unknown"
     };
-
-    public Direction Direction { get; set; } = direction; // Direction of the ship
-
-    public int Hits { get; set; } = 0; // Number of hits on the ship
-
 
     public int Length => Type switch
     {

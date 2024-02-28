@@ -1,11 +1,21 @@
 namespace BattleShip.Models.Response;
 
-public class AttackResponse(AttackOutcome result, string? ShipName, bool sunk, GameStatus gameStatus)
+public class AttackResponse
 {
-    public AttackOutcome Result { get; set; } = result;
-    public string? ShipName { get; set; } = ShipName;
-    public bool Sunk { get; set; } = sunk;
-    public GameStatus GameStatus { get; set; } = gameStatus;
+
+    public AttackOutcome Result { get; set; }
+    public string? ShipName { get; set; }
+    public bool Sunk { get; set; }
+    public GameStatus GameStatus { get; set; }
+
+
+    public AttackResponse(AttackOutcome result, string? shipName, bool sunk, GameStatus gameStatus)
+    {
+        Result = result;
+        ShipName = shipName;
+        Sunk = sunk;
+        GameStatus = gameStatus;
+    }
 }
 
 public enum GameStatus
