@@ -3,14 +3,14 @@ public class GameState
     private static GameState? instance;
     public Guid GameId { get; private set; }
     public char[,] UserBoard { get; private set; }
-    public char[,] AIBoard { get; private set; }
+    public char[,] OpponentBoard { get; private set; }
 
     // Constructeur privé pour empêcher l'instanciation en dehors de la classe
-    private GameState(Guid gameId, char[,] userBoard, char[,] aiBoard)
+    private GameState(Guid gameId, char[,] userBoard, char[,] opponentBoard)
     {
         GameId = gameId;
         UserBoard = userBoard;
-        AIBoard = aiBoard;
+        OpponentBoard = opponentBoard;
     }
 
     // Méthode pour initialiser l'instance singleton
@@ -44,6 +44,6 @@ public class GameState
     {
         GameId = gameId;
         UserBoard = userBoard;
-        AIBoard = aiBoard;
+        OpponentBoard = aiBoard;
     }
 }

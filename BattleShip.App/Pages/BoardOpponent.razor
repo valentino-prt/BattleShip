@@ -1,0 +1,84 @@
+@inject HttpClient Http;
+@inject GameState GameState;
+@using System.Text.Json;
+@using BattleShip.Models;
+@using System.Text
+
+<table class="board-table">
+    <thead>
+    <tr>
+        <th></th>
+        @for (var i = 1; i <= 10; i++)
+        {
+            var ii = i;
+            <th>@ii</th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+    @for (var row = 'A'; row <= 'J'; row++)
+    {
+        <tr>
+            <td>@row</td>
+            @for (var col = 0; col <= 9; col++)
+            {
+                var currentCol = col;
+                var currentRow = row;
+                var cell = Table[col, (int)row - 'A'];
+                switch (cell)
+                {
+                    case 'X':
+                        <td style="background-color: red" @onclick="() => CellClicked(currentRow, currentCol)">X</td>
+                        break;
+                    case 'O':
+                        <td @onclick="() => CellClicked(currentRow, currentCol)">X</td>
+                        break;
+                    default:
+                        <td style="background-color: white" @onclick="() => CellClicked(currentRow, currentCol)"></td>
+                        break;
+                }
+            }
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+
+    [Parameter] public char[,] Table { get; set; }
+    //[Parameter]
+    //public EventCallback<(AttackResult UserResult, AttackResult AiResult)> OnUpdate { get; set; }
+
+    private async Task CellClicked(char row, int col)
+    {
+        Console.WriteLine($"Cell {row}{col} was clicked");
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(new
+            {
+                x = col,
+                y = (int)row - 'A'
+            }),
+            Encoding.UTF8,
+            "application/json");
+
+        // Send a POST request to API
+        using HttpResponseMessage response = await Http.PutAsync(
+            $"http://localhost:5143/games/{GameState.GameId}/attack",
+            jsonContent);
+        if (response.IsSuccessStatusCode)
+        {
+            //var content = await response.Content.ReadFromJsonAsync<GamePlayInfo>();
+            //Console.WriteLine(content);
+            //TODO afficer historique de l'action
+            //if (OnUpdate.HasDelegate)
+            {
+                // await OnUpdate.InvokeAsync((content.LastPlayerAttackResult, content.LastAutoPlayerAttackResult));
+            }
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+        }
+    }
+
+}

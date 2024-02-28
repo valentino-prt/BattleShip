@@ -9,9 +9,10 @@
 
 <h1>Welcome to BattleShip!</h1>
 
-                <button @onclick="StartGame">Start</button>
+<button @onclick="StartGame">Start</button>
 
 @code {
+
     private async Task StartGame()
     {
         using StringContent jsonContent = new(
@@ -25,48 +26,38 @@
         {
             var gameInfo = await response.Content.ReadFromJsonAsync<InitializeGameResponse>();
             Console.Write(gameInfo);
-            // Traiter les informations du jeu ici
-        } else
+            var playerBoard = new char[10, 10];
+            foreach (var Ship in gameInfo.Ships)
+            {
+                Console.WriteLine(Ship.Y);
+                Console.WriteLine(Ship.X);
+                switch (Ship.Direction)
+                {
+                    case Direction.Horizontal:
+                        for (var i = 0; i < Ship.Length; i++)
+                        {
+                            playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
+                        }
+
+                        break;
+                    case Direction.Vertical:
+                        for (var i = 0; i < Ship.Length; i++)
+                        {
+                            playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
+                        }
+
+                        break;
+                    default:
+                        return;
+                }
+            }
+            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10]);
+            navigationManager.NavigateTo("/home");
+        }
+        else
         {
             Console.WriteLine($"Error: {response.StatusCode}");
         }
-       /* HttpResponseMessage response = await httpClient.PostAsync("http://localhost:5143/games", null);
-        response.EnsureSuccessStatusCode();
-        if (response.IsSuccessStatusCode)
-        {
-            var content = await response.Content.ReadFromJsonAsync<GameInitInfo>();
-            Console.WriteLine(content);
-            if (content != null)
-            {
-                var playerBoard = new char[10, 10];
-                
-                Console.WriteLine(content.GameId);
-                Console.WriteLine(content.Ships);
-                foreach (var Ship in content.Ships)
-                {
-                    Console.WriteLine(Ship.Y);
-                    Console.WriteLine(Ship.X);
-                    switch (Ship.Direction)
-                    {
-                        case Direction.Horizontal:
-                            for (var i = 0; i < Ship.Length; i++)
-                            {
-                                playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
-                            }
-                            break;
-                        case Direction.Vertical:
-                            for (var i = 0; i < Ship.Length; i++)
-                            {
-                                playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
-                            }
-                            break;
-                        default:
-                            return;
-                    }
-                }
-                GameState.InitializeInstance(content.GameId, playerBoard, new char[10,10]);            */
-        }
-       
-        //navigationManager.NavigateTo("/home");
     }
+
 }
