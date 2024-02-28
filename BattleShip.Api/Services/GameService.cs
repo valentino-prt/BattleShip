@@ -21,7 +21,6 @@ public class GameService
         _connectionMapping = connectionMapping;
     }
 
-
     private AttackResponse PerformPlayerAttack(Board oppnentBoard, int x, int y)
     {
         var val = oppnentBoard.Grid[x, y];
