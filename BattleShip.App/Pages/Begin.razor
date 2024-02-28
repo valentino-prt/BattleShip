@@ -15,11 +15,7 @@
     private async Task StartGame()
     {
         using StringContent jsonContent = new(
-            JsonSerializer.Serialize(new 
-            {
-                CreatorId = Guid.NewGuid(),
-                GameSettings  = new GameSettings(GameMode.SoloVsAI, AIDifficulty.Easy) 
-            }),
+            JsonSerializer.Serialize(new InitializeGameRequest(Guid.NewGuid(), new GameSettings(GameMode.SoloVsAI, AIDifficulty.Easy))),
             Encoding.UTF8,
             "application/json");
 
