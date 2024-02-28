@@ -4,7 +4,18 @@ public class Ship(ShipType type, int x, int y, Direction direction)
 {
     public int X { get; set; } = x; // X coordinate
     public int Y { get; set; } = y; // Y coordinate
-    public ShipType Type { get; set; } = type; // Type of the ship
+    private ShipType Type { get; } = type; // Type of the ship
+
+    public string Name => Type switch
+    {
+        ShipType.PatrolBoat => "Patrol Boat",
+        ShipType.Submarine => "Submarine",
+        ShipType.Destroyer => "Destroyer",
+        ShipType.Battleship => "Battleship",
+        ShipType.Carrier => "Carrier",
+        _ => "Unknown"
+    };
+
     public Direction Direction { get; set; } = direction; // Direction of the ship
 
     public int Hits { get; set; } = 0; // Number of hits on the ship

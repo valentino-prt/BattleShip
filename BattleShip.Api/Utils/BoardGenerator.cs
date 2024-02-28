@@ -6,11 +6,11 @@ namespace BattleShip.Api.Utils;
 public class BoardGenerator
 {
     private static readonly Random _random = new();
+    private readonly Board _board = new();
+    private readonly List<Ship> _ships = new();
 
-    public static Board GenerateBoard()
+    public (Board board, List<Ship> ships) GenerateBoard()
     {
-        Board board = new();
-
         var shipTypes = new List<ShipType>
         {
             ShipType.Carrier,
@@ -26,26 +26,27 @@ public class BoardGenerator
             while (!placed)
             {
                 // Generate random position and direction
-                var x = _random.Next(board.Width);
-                var y = _random.Next(board.Height);
+                var x = _random.Next(_board.Width);
+                var y = _random.Next(_board.Height);
                 var direction = _random.Next(2) == 0 ? Direction.Horizontal : Direction.Vertical;
 
                 // Create ship to be placed
                 var ship = new Ship(type, x, y, direction);
 
                 // Check if ship can be placed
-                if (CanPlaceShip(board, ship))
+                if (CanPlaceShip(_board, ship))
                 {
-                    board.AddShip(ship);
+                    _ships.Add(ship);
+                    _board.UpdateGridWithShip(ship);
                     placed = true;
                 }
             }
         }
 
-        return board;
+        return (_board, _ships);
     }
 
-    private static bool CanPlaceShip(Board board, Ship ship)
+    private bool CanPlaceShip(Board board, Ship ship)
     {
         // Determine the ship's coverage on the board based on its direction
         var shipEndX = ship.X + (ship.Direction == Direction.Horizontal ? ship.Length : 0);
@@ -66,7 +67,7 @@ public class BoardGenerator
                 return false;
 
             // Check if any part of the ship overlaps with existing ships
-            foreach (var existingShip in board.Ships)
+            foreach (var existingShip in _ships)
                 for (var j = 0; j < existingShip.Length; j++)
                 {
                     var existingShipX = existingShip.X + (existingShip.Direction == Direction.Horizontal ? j : 0);

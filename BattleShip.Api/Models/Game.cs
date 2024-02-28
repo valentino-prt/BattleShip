@@ -1,19 +1,15 @@
-﻿using BattleShip.Api.Utils;
+﻿namespace BattleShip.Api.Models;
 
-namespace BattleShip.Api.Models;
-
-public class Game
-{
-    public Game()
-    {
-        Boards = new List<Board>
-        {
-            BoardGenerator.GenerateBoard(),
-            BoardGenerator.GenerateBoard()
-        };
-    }
-
-    public List<Board> Boards { get; set; } // boards for each player (0 for player 1, 1 for player Ai)
-    public Guid Id { get; } = Guid.NewGuid();
-    public int Player { get; set; } = 0; // current player (0 or 1)
-}
+// public class Game
+// {
+//     public Game(Guid creatorId, GameMode gameMode)
+//     {
+//         GameMode = gameMode;
+//         Player1 = new Player(creatorId);
+//     }
+//
+//     public Guid Id { get; } = Guid.NewGuid();
+//     public Player Player1 { get; set; } // Corresponds to the creator of the game
+//     public Player? Player2 { get; set; } // Corresponds to the opponent of the creator of the game
+//     public GameMode GameMode { get; }
+// }

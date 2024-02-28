@@ -1,7 +1,8 @@
+using BattleShip.Api.Api;
 using BattleShip.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<IGameService, GameService>();
+builder.Services.AddSingleton<GameService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -29,8 +30,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowMyOrigin");
 
-app.MapBattleShipHttpEndpoints();
+app.UseWebSockets();
+app.MapGameEndpoints();
 
 app.Run();
-
-public record AttackRequest(int X, int Y);

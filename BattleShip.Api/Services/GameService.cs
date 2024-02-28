@@ -1,100 +1,137 @@
 ﻿using BattleShip.Api.Models;
 using BattleShip.Models;
+using BattleShip.Models.Response;
+using AttackOutcome = BattleShip.Models.Response.AttackOutcome;
 
 namespace BattleShip.Api.Services;
 
-public class GameService : IGameService
+public class GameService
 {
-    private readonly AutoPlayer _autoPlayer = new();
-    public List<Game> Games { get; } = new();
+    private readonly Dictionary<Guid, GameSession> _sessions = new();
 
 
-    public GameInitInfo CreateGame()
+    private AttackResponse PerformAttack(Board oppnentBoard, int x, int y)
     {
-        Game newGame = new();
-        Games.Add(newGame);
-
-            // Initialiser les navires ici ou dans le constructeur de Game selon votre implémentation
-            return new GameInitInfo{GameId = newGame.Id, Ships = newGame.Boards[0].Ships};
-        }
-
-
-    public GamePlayInfo Attack(Guid gameId, int x, int y)
-    {
-        var game = FindGame(gameId) ?? throw new ArgumentException("Invalid game ID");
-        // Effectuer l'attaque du joueur
-        var playerAttackResult = PerformAttack(game, x, y, game.Player);
-        string? winner = null;
-
-        if (!IsGameOver(game))
+        var val = oppnentBoard.Grid[x, y];
+        switch (val)
         {
-            // Passer le tour à l'AutoPlayer
-            game.Player = (game.Player + 1) % 2;
-            var (autoX, autoY) = _autoPlayer.ChooseAttackPosition(game);
-            // Effectuer l'attaque de l'AutoPlayer
-            var autoPlayerAttackResult = PerformAttack(game, autoX, autoY, game.Player);
-
-            if (!IsGameOver(game))
-            {
-                game.Player = (game.Player + 1) % 2;
-            }
-            else
-            {
-                winner = DetermineWinner(game);
-                RemoveGame(game.Id);
-            }
-
-            // Mettre à jour le GameInfo avec les résultats de l'attaque de l'AutoPlayer
-            return new GamePlayInfo(game.Id, winner, playerAttackResult, autoPlayerAttackResult);
+            case '\0':
+                // Miss
+                oppnentBoard.Grid[x, y] = 'O';
+                return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress);
+            case 'O':
+                // Already attacked
+                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress);
+            case 'X':
+                // Already attacked
+                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress);
+            default:
+                // Hit
+                oppnentBoard.Grid[x, y] = 'X';
+                return new AttackResponse(AttackOutcome.Hit, null, false, GameStatus.InProgress);
         }
-
-        winner = DetermineWinner(game);
-        RemoveGame(game.Id);
-        return new GamePlayInfo(game.Id, winner, playerAttackResult);
     }
 
-    public bool IsGameOver(Game game)
+    public InitializeGameResponse InitializeGame(Guid creatorId, GameSettings gameSettings)
     {
-        foreach (var ship in game.Boards[game.Player].Ships)
+        var player1 = new Player(creatorId);
+        var session = new GameSession { Player1 = player1, GameSettings = gameSettings };
+
+        if (gameSettings.Mode == GameMode.SoloVsAI)
+        {
+            var aiPlayer = new Player(Guid.Empty); // Represents the AI player
+            session.Player2 = aiPlayer;
+            return new InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.InProgress);
+        }
+
+        _sessions.Add(session.Id, session);
+        return new InitializeGameResponse(session.Id, player1.Id, player1.Ships, GameStatus.WaitingForOpponent);
+    }
+
+
+    public TryJoinGameResponse TryJoinGame(Guid sessionId, Guid playerId)
+    {
+        if (_sessions.TryGetValue(sessionId, out var session) && session.Player2 == null)
+        {
+            var player2 = new Player(playerId);
+            session.Player2 = player2;
+            return new TryJoinGameResponse(sessionId, player2.Id, player2.Id, GameStatus.InProgress);
+        }
+
+        return new TryJoinGameResponse(sessionId, playerId, null, GameStatus.WaitingForOpponent);
+    }
+
+    public async Task<AttackResponse> Attack(Guid gameId, Guid player_id, int x, int y)
+    {
+        var (player, opponent) = GetPlayers(gameId, player_id);
+
+        if (player.isTurn)
+        {
+            var attackResult = PerformAttack(opponent.Board, x, y);
+
+            if (attackResult.Result == AttackOutcome.Hit)
+            {
+                var ship = opponent.Ships.Find(s => s.Name.Equals(attackResult.ShipName));
+                if (ship != null)
+                    ship.Hits++;
+                if (ship.Hits == ship.Length)
+                {
+                    attackResult.Sunk = true;
+                    var isWinner = CheckGameStatus(opponent);
+                    if (isWinner) attackResult.GameStatus = GameStatus.Completed;
+                }
+            }
+
+            // // Envoyer le résultat de l'attaque à l'adversaire
+            // await _webSocketConnectionManager.SendMessageAsync(opponent.Id, JsonConvert.SerializeObject(attackResult));
+            //
+            // // Si le mode contre l'IA est activé, simuler l'attaque de l'IA ici
+            // if (opponent.Id == Guid.Empty) // Supposons que Guid.Empty représente l'IA
+            //     // Simuler l'attaque de l'IA
+            //     // Envoyer le résultat de l'attaque de l'IA au joueur humain
+            //     await _webSocketConnectionManager.SendMessageAsync(player.Id,
+            //         JsonConvert.SerializeObject(aiAttackResult));
+
+            SwitchPlayer(player, opponent);
+            return attackResult;
+        }
+
+        return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress);
+    }
+
+    private (Player player, Player opponent) GetPlayers(Guid gameId, Guid playerId)
+    {
+        if (_sessions.TryGetValue(gameId, out var session))
+        {
+            if (session.Player1.Id == playerId)
+                return (session.Player1, session.Player2);
+            if (session.Player2.Id == playerId) return (session.Player2, session.Player1);
+        }
+
+        throw new ArgumentException("Invalid game ID or player ID");
+    }
+
+    private static bool CheckGameStatus(Player player)
+    {
+        foreach (var ship in player.Ships)
             if (ship.Hits != ship.Length)
                 return false;
         return true;
     }
 
-    private AttackResult PerformAttack(Game game, int x, int y, int player)
+    private static void SwitchPlayer(Player player1, Player player2)
     {
-        var val = game.Boards[player].Grid[x, y];
-        switch (val)
-        {
-            case '\0':
-                game.Boards[player].Grid[x, y] = 'O';
-                return new AttackResult(AttackOutcome.Miss, [x, y]);
-            case 'O':
-            case 'X':
-                return new AttackResult(AttackOutcome.AlreadyAttacked, [x, y]);
-            default:
-                var shipNumber = val - '0';
-                var ship = game.Boards[player].Ships[shipNumber];
-                ship.Hits++;
-                game.Boards[player].Grid[x, y] = 'X';
-                if (ship.Hits == ship.Length)
-                    return new AttackResult(AttackOutcome.Sunk, [x, y], ship.Type.ToString());
-                return new AttackResult(AttackOutcome.Hit, [x, y], ship.Type.ToString());
-        }
+        player1.isTurn = !player1.isTurn;
+        player2.isTurn = !player2.isTurn;
     }
 
-    public Game? FindGame(Guid gameId)
-    {
-        return Games.Find(g => g.Id == gameId);
-    }
 
-    public void RemoveGame(Guid gameId)
+    private class GameSession
     {
-        Games.RemoveAll(g => g.Id == gameId);
-    }
+        public Guid Id { get; } = Guid.NewGuid();
+        public Player Player1 { get; set; }
+        public Player Player2 { get; set; }
 
-    private string DetermineWinner(Game game)
-    {
-        return game.Player == 0 ? "AutoPlayer" : "Player";
+        public GameSettings GameSettings { get; set; }
     }
 }

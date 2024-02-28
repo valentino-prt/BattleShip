@@ -8,9 +8,6 @@ public class Board
 
     public readonly int Width = 10;
 
-    public List<Ship> Ships = new(); // list of ships on the board, now private
-
-
     public Board()
     {
         Grid = InitializeBoard();
@@ -45,21 +42,14 @@ public class Board
         return board;
     }
 
-    public void AddShip(Ship ship)
+    public void UpdateGridWithShip(Ship ship)
     {
-        // Add the ship to the list
-        Ships.Add(ship);
+        var shipChar = ship.Name[0];
 
-        // Update the grid based on the ship's position and length
-        UpdateGridWithShip(ship);
-    }
-
-    private void UpdateGridWithShip(Ship ship)
-    {
         for (var i = 0; i < ship.Length; i++)
             if (ship.Direction == Direction.Horizontal)
-                Grid[ship.X + i, ship.Y] = (Ships.Count - 1).ToString()[0];
+                Grid[ship.X + i, ship.Y] = shipChar;
             else // Direction.Vertical
-                Grid[ship.X, ship.Y + i] = (Ships.Count - 1).ToString()[0];
+                Grid[ship.X, ship.Y + i] = shipChar;
     }
 }
