@@ -1,14 +1,23 @@
-﻿using BattleShip.Api.Models;
+﻿using BattleShip.Api.Hubs;
+using BattleShip.Api.Models;
 using BattleShip.Api.Services.Behaviors;
 using BattleShip.Models;
 using BattleShip.Models.Response;
+using Microsoft.AspNetCore.SignalR;
 using AttackOutcome = BattleShip.Models.Response.AttackOutcome;
 
 namespace BattleShip.Api.Services;
 
 public class GameService
 {
+    private readonly IHubContext<GameHub> _hubContext;
     private readonly Dictionary<Guid, GameSession> _sessions = new();
+
+
+    public GameService(IHubContext<GameHub> hubContext)
+    {
+        _hubContext = hubContext;
+    }
 
 
     private AttackResponse PerformPlayerAttack(Board oppnentBoard, int x, int y)
@@ -110,7 +119,6 @@ public class GameService
                 }
             }
 
-            // // Envoyer le résultat de l'attaque à l'adversaire
 
             // // Si le mode contre l'IA est activé, simuler l'attaque de l'IA ici
             if (opponent.Id == Guid.Empty)
@@ -131,9 +139,13 @@ public class GameService
                 }
 
                 // Envoyer le résultat de l'attaque de l'IA au joueur humain
+                await _hubContext.Clients.Clients(player.Id.ToString())
+                    .SendAsync("ReceiveAttackResult", aiAttackResult);
             }
             else
             {
+                await _hubContext.Clients.Clients(opponent.Id.ToString())
+                    .SendAsync("ReceiveAttackResult", attackResult);
                 SwitchPlayer(player, opponent);
             }
 

@@ -1,4 +1,5 @@
 using BattleShip.Api.Api;
+using BattleShip.Api.Hubs;
 using BattleShip.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +31,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowMyOrigin");
 
-app.UseWebSockets();
 app.MapGameEndpoints();
+app.MapHub<PlayerHub>("/playerhub");
+
 
 app.Run();
