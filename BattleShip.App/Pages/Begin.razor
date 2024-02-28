@@ -1,7 +1,10 @@
 @page "/"
-@inject HttpClient httpClient
+@inject HttpClient Http;
 @inject NavigationManager navigationManager
 @using BattleShip.Models;
+@using System.Text
+@using System.Text.Json
+@using BattleShip.Models.Response
 
 
 <h1>Welcome to BattleShip!</h1>
@@ -11,8 +14,27 @@
 @code {
     private async Task StartGame()
     {
-        
-        HttpResponseMessage response = await httpClient.PostAsync("http://localhost:5143/games", null);
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(new 
+            {
+                CreatorId = Guid.NewGuid(),
+                GameSettings  = new GameSettings(GameMode.SoloVsAI, AIDifficulty.Easy) 
+            }),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await Http.PostAsync("http://localhost:5143/games", jsonContent);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var gameInfo = await response.Content.ReadFromJsonAsync<InitializeGameResponse>();
+            Console.Write(gameInfo);
+            // Traiter les informations du jeu ici
+        } else
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+        }
+       /* HttpResponseMessage response = await httpClient.PostAsync("http://localhost:5143/games", null);
         response.EnsureSuccessStatusCode();
         if (response.IsSuccessStatusCode)
         {
@@ -46,12 +68,9 @@
                             return;
                     }
                 }
-                GameState.InitializeInstance(content.GameId, playerBoard, new char[10,10]);            }
+                GameState.InitializeInstance(content.GameId, playerBoard, new char[10,10]);            */
         }
-        else
-        {
-            Console.WriteLine($"Error: {response.StatusCode}");
-        }
-        navigationManager.NavigateTo("/home");
+       
+        //navigationManager.NavigateTo("/home");
     }
 }
