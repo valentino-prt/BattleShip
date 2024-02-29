@@ -5,13 +5,13 @@
 @using BattleShip.Models.Responses
 @using System.Text
 @inject HttpClient Http;
-@inject NavigationManager navigationManager
+@inject NavigationManager NavigationManager
 
 
 <h1>Welcome to BattleShip!</h1>
 <div class="div-menu">
     <button @onclick="ToggleDropdown" class="menu-button">Create a new game</button>
-    @if (showDropdown)
+    @if (_showDropdown)
     {
         <div class="dropdown-menu">
             <button class="dropdown-item" @onclick="CreateGameIa">IA</button>
@@ -21,24 +21,24 @@
         </div>
     }
     <button @onclick="JoinGame" class="menu-button">Join a game</button>
-    @if (showJoinGame)
+    @if (_showJoinGame)
     {
         <div class="dropdown-menu">
-            <input type="text" @bind="gameCode" placeholder="Enter the game code"/>
+            <input type="text" @bind="_gameCode" placeholder="Enter the game code"/>
             <button @onclick="JoinParty" class="dropdown-item">Join</button>
         </div>
     }
 </div>
 
 @code {
-    private bool showDropdown;
-    private bool showJoinGame;
-    private string gameCode;
+    private bool _showDropdown;
+    private bool _showJoinGame;
+    private string _gameCode;
 
 
     private void ToggleDropdown()
     {
-        showDropdown = !showDropdown;
+        _showDropdown = !_showDropdown;
     }
 
     private async Task CreateGameIa()
@@ -55,21 +55,21 @@
         {
             var gameInfo = await response.Content.ReadFromJsonAsync<InitializeGameResponse>();
             var playerBoard = new char[10, 10];
-            foreach (var Ship in gameInfo.Ships)
+            foreach (var ship in gameInfo.Ships)
             {
-                switch (Ship.Direction)
+                switch (ship.Direction)
                 {
                     case Direction.Horizontal:
-                        for (var i = 0; i < Ship.Length; i++)
+                        for (var i = 0; i < ship.Length; i++)
                         {
-                            playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
+                            playerBoard[ship.X + i, ship.Y] = ship.Type.ToString().Substring(0, 1)[0];
                         }
 
                         break;
                     case Direction.Vertical:
-                        for (var i = 0; i < Ship.Length; i++)
+                        for (var i = 0; i < ship.Length; i++)
                         {
-                            playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
+                            playerBoard[ship.X, ship.Y + i] = ship.Type.ToString().Substring(0, 1)[0];
                         }
 
                         break;
@@ -79,7 +79,7 @@
             }
 
             GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId);
-            navigationManager.NavigateTo("/home");
+            NavigationManager.NavigateTo("/home");
         }
         else
         {
@@ -101,21 +101,21 @@
         {
             var gameInfo = await response.Content.ReadFromJsonAsync<InitializeGameResponse>();
             var playerBoard = new char[10, 10];
-            foreach (var Ship in gameInfo.Ships)
+            foreach (var ship in gameInfo.Ships)
             {
-                switch (Ship.Direction)
+                switch (ship.Direction)
                 {
                     case Direction.Horizontal:
-                        for (var i = 0; i < Ship.Length; i++)
+                        for (var i = 0; i < ship.Length; i++)
                         {
-                            playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
+                            playerBoard[ship.X + i, ship.Y] = ship.Type.ToString().Substring(0, 1)[0];
                         }
 
                         break;
                     case Direction.Vertical:
-                        for (var i = 0; i < Ship.Length; i++)
+                        for (var i = 0; i < ship.Length; i++)
                         {
-                            playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
+                            playerBoard[ship.X, ship.Y + i] = ship.Type.ToString().Substring(0, 1)[0];
                         }
 
                         break;
@@ -125,7 +125,7 @@
             }
 
             GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId);
-            navigationManager.NavigateTo("/home");
+            NavigationManager.NavigateTo("/home");
         }
         else
         {
@@ -135,13 +135,13 @@
 
     private async Task JoinGame()
     {
-        showJoinGame = !showJoinGame;
+        _showJoinGame = !_showJoinGame;
     }
 
     private async Task JoinParty()
     {
-        var gameId = Guid.Parse(gameCode);
-        Console.Write(gameCode);
+        var gameId = Guid.Parse(_gameCode);
+        Console.Write(_gameCode);
         using StringContent jsonContent = new(
             JsonSerializer.Serialize(new TryJoinGameRequest(gameId, Guid.NewGuid())),
             Encoding.UTF8,
@@ -154,21 +154,21 @@
             Console.WriteLine(gameInfo.SessionId);
             Console.WriteLine(gameInfo.Player2Id);
             var playerBoard = new char[10, 10];
-            foreach (var Ship in gameInfo.Ships)
+            foreach (var ship in gameInfo.Ships)
             {
-                switch (Ship.Direction)
+                switch (ship.Direction)
                 {
                     case Direction.Horizontal:
-                        for (var i = 0; i < Ship.Length; i++)
+                        for (var i = 0; i < ship.Length; i++)
                         {
-                            playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
+                            playerBoard[ship.X + i, ship.Y] = ship.Type.ToString().Substring(0, 1)[0];
                         }
 
                         break;
                     case Direction.Vertical:
-                        for (var i = 0; i < Ship.Length; i++)
+                        for (var i = 0; i < ship.Length; i++)
                         {
-                            playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
+                            playerBoard[ship.X, ship.Y + i] = ship.Type.ToString().Substring(0, 1)[0];
                         }
 
                         break;
@@ -178,8 +178,7 @@
             }
 
             GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], gameInfo.Player2Id);
-            navigationManager.NavigateTo("/home");
-            
+            NavigationManager.NavigateTo("/home");
         }
         else
         {

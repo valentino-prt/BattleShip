@@ -1,5 +1,4 @@
 ﻿@page "/home"
-@inject NavigationManager Navigation
 @inject GameState GameState;
 @using Microsoft.AspNetCore.SignalR.Client
 @using BattleShip.Models.Responses
@@ -11,13 +10,13 @@
     <div>
         <h5>Player 1 Board</h5>
         <BoardUser Table="UserBoard"/>
-        <History HistoryItems="userHistory"></History>
+        <History HistoryItems="_userHistory"></History>
     </div>
 
     <div>
         <h5>Player 2 Board</h5>
         <BoardOpponent Table="OpponentBoard" OnUpdate="a => UpdateOpponentBoard(a.UserResult, a.col, a.row)"/>
-        <History HistoryItems="opponentHistory"></History>
+        <History HistoryItems="_opponentHistory"></History>
     </div>
 
 </div>
@@ -36,24 +35,24 @@
 @code{
     [Parameter] public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
     [Parameter] public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
-    private readonly List<string> userHistory = new();
-    private readonly List<string> opponentHistory = new();
+    private readonly List<string> _userHistory = new();
+    private readonly List<string> _opponentHistory = new();
 
 
-    private HubConnection? hubConnection;
-    private readonly List<string> messages = new();
-    private string? userInput;
-    private string? messageInput;
+    private HubConnection? _hubConnection;
+    private readonly List<string> _messages = new();
+    private string? _userInput;
+    private string? _messageInput;
 
     protected override async Task OnInitializedAsync()
     {
         //TODO : use app.settings et IConfiguration
-        hubConnection = new HubConnectionBuilder()
+        _hubConnection = new HubConnectionBuilder()
             .WithUrl("http://localhost:5000/playerhub")
             .Build();
 
 
-        hubConnection.On<AttackResponse>("ReceiveAttackResult", attackResponse =>
+        _hubConnection.On<AttackResponse>("ReceiveAttackResult", attackResponse =>
         {
             var statusMessage = $"Game Status: {attackResponse.GameStatus}";
 
@@ -67,7 +66,7 @@
             var encodedMsg = $"AI Attack Result: {shipMessage}{sunkMessage}. {statusMessage}";
 
             // Add the message to the list
-            messages.Add(encodedMsg);
+            _messages.Add(encodedMsg);
 
             UpdateUserBoard(attackResponse);
             // Refresh the UI
@@ -75,30 +74,30 @@
         });
 
         // Démarrage de la connexion au hub
-        await hubConnection.StartAsync();
+        await _hubConnection.StartAsync();
 
 
         // Appel de la méthode "RegisterUserId" sur le hub après l'établissement de la connexion
-        await hubConnection.InvokeAsync("RegisterUserId", GameState.PlayerId);
+        await _hubConnection.InvokeAsync("RegisterUserId", GameState.PlayerId);
     }
 
 
     private async Task Send()
     {
-        if (hubConnection is not null)
+        if (_hubConnection is not null)
         {
-            await hubConnection.SendAsync("SendMessage", userInput, messageInput);
+            await _hubConnection.SendAsync("SendMessage", _userInput, _messageInput);
         }
     }
 
     public bool IsConnected =>
-        hubConnection?.State == HubConnectionState.Connected;
+        _hubConnection?.State == HubConnectionState.Connected;
 
     public async ValueTask DisposeAsync()
     {
-        if (hubConnection is not null)
+        if (_hubConnection is not null)
         {
-            await hubConnection.DisposeAsync();
+            await _hubConnection.DisposeAsync();
         }
     }
 
@@ -119,7 +118,7 @@
         }
 
         UserBoard[opponentAttack.Coordinates.X, opponentAttack.Coordinates.Y] = value;
-        userHistory.Add($"Play: {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y} - Result: {opponentAttack.Result}");
+        _userHistory.Add($"Play: {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y} - Result: {opponentAttack.Result}");
         StateHasChanged();
     }
 
@@ -140,7 +139,7 @@
         }
 
         OpponentBoard[col, row] = value;
-        opponentHistory.Add($"Play: {col},{row} - Result: {playerAttack.Result}");
+        _opponentHistory.Add($"Play: {col},{row} - Result: {playerAttack.Result}");
         StateHasChanged();
     }
 
