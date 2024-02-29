@@ -11,14 +11,15 @@
     <div>
         <h5>Player 1 Board</h5>
         <BoardUser Table="UserBoard"/>
-        <History></History>
+        <History HistoryItems="userHistory"></History>
     </div>
-
+    
     <div>
         <h5>Player 2 Board</h5>
         <BoardOpponent Table="OpponentBoard" OnUpdate="(a) => UpdateOpponentBoard(a.UserResult, a.col, a.row)"/>
-        <History></History>
-        </div>
+        <History HistoryItems="opponentHistory"></History>
+    </div>
+
 </div>
 
 <style>
@@ -36,6 +37,8 @@
     public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
     [Parameter]
     public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
+    private List<string> userHistory = new List<string>();
+    private List<string> opponentHistory = new List<string>();
     
     
     private HubConnection? hubConnection;
@@ -46,7 +49,7 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/playerHub"))
+            .WithUrl("http://localhost:5143/playerHub")
             .Build();
 
         
@@ -116,6 +119,7 @@
                 return;
         }
         UserBoard[opponentAttack.Coordinates.X, opponentAttack.Coordinates.Y] = value;
+        userHistory.Add($"Coup: {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y} - Résultat: {opponentAttack.Result}");
         StateHasChanged();
     }
 
@@ -136,7 +140,7 @@
         }
 
         OpponentBoard[col, row] = value;
+        opponentHistory.Add($"Coup: {col},{row} - Résultat: {playerAttack.Result}");
         StateHasChanged();
-        //UpdateUserBoard(AiAttack);
     }
 }

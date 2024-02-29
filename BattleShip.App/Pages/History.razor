@@ -1,5 +1,30 @@
-﻿<h3>History</h3>
+﻿@if (ShowFullHistory)
+{
+    @foreach (var item in HistoryItems)
+    {
+        <div>@item</div>
+    }
+}
+else
+{
+    @foreach (var item in HistoryItems.TakeLast(5))
+    {
+        <div>@item</div>
+    }
+}
+
+<button class="btn btn-primary" @onclick="ToggleHistory">Show More</button>
 
 @code {
+    [Parameter]
+    public List<string> HistoryItems { get; set; }
+
+    private bool ShowFullHistory { get; set; } = false;
     
+    private string ButtonText => ShowFullHistory ? "Show Less" : "Show More";
+    
+    private void ToggleHistory()
+    {
+        ShowFullHistory = !ShowFullHistory;
+    }
 }
