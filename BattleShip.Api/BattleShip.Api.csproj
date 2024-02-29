@@ -8,22 +8,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.60.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.2"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
+        <PackageReference Include="Grpc.AspNetCore.Web" Version="2.61.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.2" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\BattleShip.Models\BattleShip.Models.csproj"/>
+        <ProjectReference Include="..\BattleShip.Models\BattleShip.Models.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="..\*.proto" GrpcServices="Server" Link="Protos\%(Filename).proto"/>
+        <Protobuf Include="..\*.proto" GrpcServices="Server" Link="Protos\%(Filename).proto" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Protos\"/>
+        <Folder Include="Protos\" />
     </ItemGroup>
 
 </Project>

@@ -31,19 +31,23 @@ public class GameService
             case '\0':
                 // Miss
                 opponentBoard.Grid[x, y] = 'O';
-                return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress,new Coordinates(x,y));
+                return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress,
+                    new Coordinates(x, y));
             case 'O':
                 // Already attacked
-                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,new Coordinates(x,y));
+                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,
+                    new Coordinates(x, y));
             case 'X':
                 // Already attacked
-                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,new Coordinates(x,y));
+                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,
+                    new Coordinates(x, y));
             default:
                 // Hit
                 opponentBoard.Grid[x, y] = 'X';
                 var shipname = opponent.Ships.Find(s => s.Name[0] == val)?.Name;
 
-                return new AttackResponse(AttackOutcome.Hit, shipname, false, GameStatus.InProgress,new Coordinates(x,y));
+                return new AttackResponse(AttackOutcome.Hit, shipname, false, GameStatus.InProgress,
+                    new Coordinates(x, y));
         }
     }
 
@@ -57,18 +61,22 @@ public class GameService
             case '\0':
                 // Miss
                 opponentBoard.Grid[x, y] = 'O';
-                return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress, new Coordinates(x,y));
+                return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress,
+                    new Coordinates(x, y));
             case 'O':
                 // Already attacked
-                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,new Coordinates(x,y));
+                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,
+                    new Coordinates(x, y));
             case 'X':
                 // Already attacked
-                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,new Coordinates(x,y));
+                return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,
+                    new Coordinates(x, y));
             default:
                 // Hit
                 opponentBoard.Grid[x, y] = 'X';
                 var shipname = opponent.Ships.Find(s => s.Name[0] == val)?.Name;
-                return new AttackResponse(AttackOutcome.Hit, shipname, false, GameStatus.InProgress,new Coordinates(x,y));
+                return new AttackResponse(AttackOutcome.Hit, shipname, false, GameStatus.InProgress,
+                    new Coordinates(x, y));
         }
     }
 
@@ -175,7 +183,8 @@ public class GameService
             return attackResult;
         }
 
-        return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,new Coordinates(x,y));
+        return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,
+            new Coordinates(x, y));
     }
 
     private (Player player, Player opponent) GetPlayers(Guid gameId, Guid playerId)
@@ -202,13 +211,5 @@ public class GameService
     {
         player1.IsTurn = !player1.IsTurn;
         player2.IsTurn = !player2.IsTurn;
-    }
-
-    private class GameSession
-    {
-        public Guid Id { get; } = Guid.NewGuid();
-        public Player Player1 { get; set; }
-        public Player Player2 { get; set; }
-        public GameSettings GameSettings { get; set; }
     }
 }
