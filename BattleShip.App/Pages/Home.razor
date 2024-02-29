@@ -50,7 +50,7 @@
 
         hubConnection.On<AttackResponse>("ReceiveAttackResult", attackResponse =>
         {
-            Console.Write("WESH");
+            Console.Write($"WESH {attackResponse.Coordinates.X} {attackResponse.Coordinates.Y} {attackResponse.Result} {attackResponse.GameStatus} {attackResponse.ShipName} {attackResponse.Sunk}");
             var statusMessage = $"Game Status: {attackResponse.GameStatus}";
 
             // If there's a ship name, include it in the message
