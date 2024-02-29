@@ -1,8 +1,8 @@
 ﻿@page "/home"
+@using BattleShip.Models.Response
+@using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
 @inject GameState GameState;
-@using Microsoft.AspNetCore.SignalR.Client
-@using BattleShip.Models.Response
 @implements IAsyncDisposable
 
 <h3>Home</h3>
@@ -16,9 +16,9 @@
 
     <div>
         <h5>Player 2 Board</h5>
-        <BoardOpponent Table="OpponentBoard" OnUpdate="a => UpdateOpponentBoard(a.UserResult, a.col, a.row)"/>
+        <BoardOpponent Table="OpponentBoard" OnUpdate="(a) => UpdateOpponentBoard(a.UserResult, a.col, a.row)"/>
         <History></History>
-    </div>
+        </div>
 </div>
 
 <style>
@@ -31,24 +31,26 @@
         margin: 10px;
     }
 </style>
-
 @code{
-    [Parameter] public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
-    [Parameter] public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
-
+    [Parameter]
+    public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
+    [Parameter]
+    public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
+    
+    
     private HubConnection? hubConnection;
-    private readonly List<string> messages = new();
+    private List<string> messages = new List<string>();
     private string? userInput;
     private string? messageInput;
 
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("/playerHub"))
+            .WithUrl(Navigation.ToAbsoluteUri("http://localhost:5143/playerHub"))
             .Build();
 
-
-        hubConnection.On<AttackResponse>("ReceiveAttackResult", attackResponse =>
+        
+        hubConnection.On<AttackResponse>("ReceiveAttackResult", (attackResponse) =>
         {
             Console.Write($"WESH {attackResponse.Coordinates.X} {attackResponse.Coordinates.Y} {attackResponse.Result} {attackResponse.GameStatus} {attackResponse.ShipName} {attackResponse.Sunk}");
             var statusMessage = $"Game Status: {attackResponse.GameStatus}";
@@ -64,7 +66,8 @@
 
             // Add the message to the list
             messages.Add(encodedMsg);
-
+            
+            UpdateUserBoard(attackResponse);
             // Refresh the UI
             InvokeAsync(StateHasChanged);
         });
@@ -74,7 +77,7 @@
 
 
         // Appel de la méthode "RegisterUserId" sur le hub après l'établissement de la connexion
-        await hubConnection.InvokeAsync("RegisterUserId", GameState.PlayerId);
+        await hubConnection.InvokeAsync("RegisterUserId", GameState.PlayerId );
     }
 
 
@@ -96,11 +99,11 @@
             await hubConnection.DisposeAsync();
         }
     }
-
-    /*private void UpdateUserBoard(AttackResponse AiAttack)
+    
+    private void UpdateUserBoard(AttackResponse opponentAttack)
     {
         var value = 'O';
-        switch (AiAttack.Outcome)
+        switch (opponentAttack.Result)
         {
             case AttackOutcome.Hit:
                 value = 'X';
@@ -109,12 +112,12 @@
                 Console.Write("Sunk");
                 break;
             case AttackOutcome.AlreadyAttacked:
-                Console.WriteLine($"Error: Player Already Attacked {AiAttack.Coordinates[0]},{AiAttack.Coordinates[1]}");
+                Console.WriteLine($"Error: Player Already Attacked {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y}");
                 return;
         }
-        UserBoard[AiAttack.Coordinates[0], AiAttack.Coordinates[1]] = value;
+        UserBoard[opponentAttack.Coordinates.X, opponentAttack.Coordinates.Y] = value;
         StateHasChanged();
-    }*/
+    }
 
     private void UpdateOpponentBoard(AttackResponse playerAttack, int col, int row)
     {
@@ -136,5 +139,4 @@
         StateHasChanged();
         //UpdateUserBoard(AiAttack);
     }
-
 }
