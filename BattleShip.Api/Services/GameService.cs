@@ -3,9 +3,9 @@ using BattleShip.Api.Models;
 using BattleShip.Api.Services.Behaviors;
 using BattleShip.Api.Utils;
 using BattleShip.Models;
-using BattleShip.Models.Response;
+using BattleShip.Models.Responses;
 using Microsoft.AspNetCore.SignalR;
-using AttackOutcome = BattleShip.Models.Response.AttackOutcome;
+using AttackOutcome = BattleShip.Models.Responses.AttackOutcome;
 
 namespace BattleShip.Api.Services;
 
@@ -130,7 +130,7 @@ public class GameService
         if (player.IsTurn)
         {
             var attackResult = PerformPlayerAttack(opponent, x, y);
-            if( attackResult.Result == AttackOutcome.AlreadyAttacked)  return attackResult;
+            if (attackResult.Result == AttackOutcome.AlreadyAttacked) return attackResult;
             if (attackResult.Result == AttackOutcome.Hit)
             {
                 var ship = opponent.Ships.Find(s => s.Name.Equals(attackResult.ShipName));

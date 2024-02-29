@@ -1,5 +1,5 @@
 using BattleShip.Api.Services;
-using BattleShip.Models;
+using BattleShip.Models.Requests;
 
 namespace BattleShip.Api.Api;
 

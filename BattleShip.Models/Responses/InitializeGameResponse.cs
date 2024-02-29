@@ -1,4 +1,4 @@
-namespace BattleShip.Models.Response;
+namespace BattleShip.Models.Responses;
 
 public class InitializeGameResponse(Guid sessionId, Guid player1Id, List<Ship> ships, GameStatus status)
 {
