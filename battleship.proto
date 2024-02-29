@@ -6,59 +6,8 @@ package battleship;
 
 // Définition du service
 service BattleShipService {
-  rpc CreateGame (Empty) returns (GameInitInfo);
-  rpc Attack (AttackRequest) returns (GamePlayInfo);
+  rpc CreateGame(InitializeGameResponse) returns (GameInitInfo);
+//  rpc Attack (AttackRequest) returns (GamePlayInfo);
 }
 
 // Définition des messages
-message Empty {}
-
-message GameInitInfo {
-  string gameId = 1;
-  repeated Ship ships = 2;
-}
-
-message GamePlayInfo {
-  string gameId = 1;
-  string winner = 2;
-  AttackResult lastPlayerAttackResult = 3;
-  AttackResult lastAutoPlayerAttackResult = 4;
-}
-
-message AttackRequest {
-  string gameId = 1;
-  int32 x = 2;
-  int32 y = 3;
-}
-
-message Ship {
-  string type = 1;
-  int32 length = 2;
-  int32 x = 3;
-  int32 y = 4;
-  Direction direction = 5;
-}
-
-message Position {
-  int32 x = 1;
-  int32 y = 2;
-}
-
-message AttackResult {
-  AttackOutcome outcome = 1;
-  Position coordinates = 2; // Supposant que chaque résultat d'attaque inclut des coordonnées, modifiez selon vos besoins
-  string shipName = 3;
-}
-
-enum AttackOutcome {
-  MISS = 0;
-  HIT = 1;
-  SUNK = 2;
-  ALREADY_ATTACKED = 3;
-}
-
-enum Direction {
-  HORIZONTAL = 0;
-  VERTICAL = 1;
-}
-
