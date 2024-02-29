@@ -1,4 +1,5 @@
 using BattleShip.Api.Models;
+using BattleShip.Models;
 
 namespace BattleShip.Api.Services.Behaviors;
 
@@ -6,8 +7,7 @@ public class RandomBehavior : IBehavior
 {
     private readonly Random _random = new();
 
-    // TODO : Change (int, int) to a Coordinate class
-    public (int x, int y) ChooseAttackCoordinates(Board opponentBoard)
+    public Coordinates ChooseAttackCoordinates(Board opponentBoard)
     {
         int x, y;
         do
@@ -17,6 +17,6 @@ public class RandomBehavior : IBehavior
         } while (opponentBoard.Grid[x, y] == 'X' ||
                  opponentBoard.Grid[x, y] == 'O');
 
-        return (x, y);
+        return new Coordinates(x, y);
     }
 }

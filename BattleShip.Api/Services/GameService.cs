@@ -54,29 +54,27 @@ public class GameService
     private AttackResponse PerformAittack(Player opponent, Player aiPlayer)
     {
         var opponentBoard = opponent.Board;
-        var (x, y) = aiPlayer.Behavior.ChooseAttackCoordinates(opponentBoard);
-        var val = opponentBoard.Grid[x, y];
+        var coordinates = aiPlayer.Behavior.ChooseAttackCoordinates(opponentBoard);
+        var val = opponentBoard.Grid[coordinates.X, coordinates.Y];
         switch (val)
         {
             case '\0':
                 // Miss
-                opponentBoard.Grid[x, y] = 'O';
-                return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress,
-                    new Coordinates(x, y));
+                opponentBoard.Grid[coordinates.X, coordinates.Y] = 'O';
+                return new AttackResponse(AttackOutcome.Miss, null, false, GameStatus.InProgress, coordinates);
             case 'O':
                 // Already attacked
                 return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,
-                    new Coordinates(x, y));
+                    coordinates);
             case 'X':
                 // Already attacked
                 return new AttackResponse(AttackOutcome.AlreadyAttacked, null, false, GameStatus.InProgress,
-                    new Coordinates(x, y));
+                    coordinates);
             default:
                 // Hit
-                opponentBoard.Grid[x, y] = 'X';
+                opponentBoard.Grid[coordinates.X, coordinates.Y] = 'X';
                 var shipname = opponent.Ships.Find(s => s.Name[0] == val)?.Name;
-                return new AttackResponse(AttackOutcome.Hit, shipname, false, GameStatus.InProgress,
-                    new Coordinates(x, y));
+                return new AttackResponse(AttackOutcome.Hit, shipname, false, GameStatus.InProgress, coordinates);
         }
     }
 
