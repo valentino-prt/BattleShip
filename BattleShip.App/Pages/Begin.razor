@@ -1,38 +1,40 @@
 @page "/"
+@using System.Text.Json
+@using BattleShip.Models
+@using BattleShip.Models.Response
+@using System.Text
 @inject HttpClient Http;
 @inject NavigationManager navigationManager
-@using BattleShip.Models;
-@using System.Text
-@using System.Text.Json
-@using BattleShip.Models.Response
 
 
 <h1>Welcome to BattleShip!</h1>
 <div class="div-menu">
     <button @onclick="ToggleDropdown" class="menu-button">Create a new game</button>
-    @if(showDropdown)
+    @if (showDropdown)
     {
         <div class="dropdown-menu">
             <button class="dropdown-item" @onclick="CreateGameIa">IA</button>
         </div>
     }
     <button @onclick="JoinGame" class="menu-button">Join a game</button>
-    @if(showJoinGame)
+    @if (showJoinGame)
     {
         <div class="dropdown-menu">
-            <input type="text" placeholder="Enter the game code" />
+            <input type="text" placeholder="Enter the game code"/>
             <button class="dropdown-item">Join</button>
         </div>
     }
 </div>
+
 @code {
-    private bool showDropdown = false;
-    private bool showJoinGame = false;
+    private bool showDropdown;
+    private bool showJoinGame;
 
     private void ToggleDropdown()
     {
         showDropdown = !showDropdown;
     }
+
     private async Task CreateGameIa()
     {
         var playerId = Guid.NewGuid();
@@ -41,7 +43,7 @@
             Encoding.UTF8,
             "application/json");
 
-        var response = await Http.PostAsync("http://localhost:5143/games", jsonContent);
+        var response = await Http.PostAsync("/games", jsonContent);
 
         if (response.IsSuccessStatusCode)
         {
@@ -63,11 +65,13 @@
                         {
                             playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
                         }
+
                         break;
                     default:
                         return;
                 }
             }
+
             GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId);
             navigationManager.NavigateTo("/home");
         }

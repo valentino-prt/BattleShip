@@ -1,9 +1,9 @@
+@using BattleShip.Models.Response
+@using System.Text.Json
+@using BattleShip.Models
+@using System.Text
 @inject HttpClient Http;
 @inject GameState GameState;
-@using System.Text.Json;
-@using BattleShip.Models;
-@using System.Text
-@using BattleShip.Models.Response
 
 <table class="board-table">
     <thead>
@@ -25,7 +25,7 @@
             {
                 var currentCol = col;
                 var currentRow = row;
-                var cell = Table[col, (int)row - 'A'];
+                var cell = Table[col, row - 'A'];
                 switch (cell)
                 {
                     case 'X':
@@ -47,8 +47,7 @@
 @code {
 
     [Parameter] public char[,] Table { get; set; }
-    [Parameter]
-    public EventCallback<(AttackResponse UserResult, int col, int row)> OnUpdate { get; set; }
+    [Parameter] public EventCallback<(AttackResponse UserResult, int col, int row)> OnUpdate { get; set; }
 
     private async Task CellClicked(char row, int col)
     {
@@ -56,12 +55,12 @@
         using StringContent jsonContent = new(
             JsonSerializer.Serialize(new AttackRequest(GameState.GameId,
                 GameState.PlayerId,
-                 col,
-                (int)row - 'A')),
+                col,
+                row - 'A')),
             Encoding.UTF8,
             "application/json");
 
-        var response = await Http.PostAsync("http://localhost:5143/attack", jsonContent);
+        var response = await Http.PostAsync("/attack", jsonContent);
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadFromJsonAsync<AttackResponse>();
@@ -69,7 +68,7 @@
             //TODO afficher historique de l'action
             if (OnUpdate.HasDelegate)
             {
-                await OnUpdate.InvokeAsync((content, col, (int)row - 'A'));
+                await OnUpdate.InvokeAsync((content, col, row - 'A'));
             }
         }
         else
