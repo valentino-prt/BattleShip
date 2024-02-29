@@ -1,8 +1,6 @@
 ﻿@page "/home"
-@using BattleShip.Models
 @using BattleShip.Models.Response
 @using Microsoft.AspNetCore.SignalR.Client
-@using System.Text.Json
 @inject NavigationManager Navigation
 @inject GameState GameState;
 @implements IAsyncDisposable
@@ -12,7 +10,7 @@
 <div class="boards-container">
     <div>
         <h5>Player 1 Board</h5>
-        <BoardUser Table="UserBoard" />
+        <BoardUser Table="UserBoard"/>
         <History></History>
     </div>
 
@@ -38,6 +36,7 @@
     public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
     [Parameter]
     public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
+    
     
     private HubConnection? hubConnection;
     private List<string> messages = new List<string>();
@@ -67,7 +66,8 @@
 
             // Add the message to the list
             messages.Add(encodedMsg);
-
+            
+            UpdateUserBoard(attackResponse);
             // Refresh the UI
             InvokeAsync(StateHasChanged);
         });
@@ -100,10 +100,10 @@
         }
     }
     
-    /*private void UpdateUserBoard(AttackResponse AiAttack)
+    private void UpdateUserBoard(AttackResponse opponentAttack)
     {
         var value = 'O';
-        switch (AiAttack.Outcome)
+        switch (opponentAttack.Result)
         {
             case AttackOutcome.Hit:
                 value = 'X';
@@ -112,12 +112,12 @@
                 Console.Write("Sunk");
                 break;
             case AttackOutcome.AlreadyAttacked:
-                Console.WriteLine($"Error: Player Already Attacked {AiAttack.Coordinates[0]},{AiAttack.Coordinates[1]}");
+                Console.WriteLine($"Error: Player Already Attacked {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y}");
                 return;
         }
-        UserBoard[AiAttack.Coordinates[0], AiAttack.Coordinates[1]] = value;
+        UserBoard[opponentAttack.Coordinates.X, opponentAttack.Coordinates.Y] = value;
         StateHasChanged();
-    }*/
+    }
 
     private void UpdateOpponentBoard(AttackResponse playerAttack, int col, int row)
     {
