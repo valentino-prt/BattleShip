@@ -46,7 +46,7 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(Navigation.ToAbsoluteUri("http://localhost:5143/playerHub"))
+            .WithUrl(Navigation.ToAbsoluteUri("/playerHub"))
             .Build();
 
         
