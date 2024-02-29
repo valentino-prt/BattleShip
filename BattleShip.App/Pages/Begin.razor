@@ -15,13 +15,16 @@
         <div class="dropdown-menu">
             <button class="dropdown-item" @onclick="CreateGameIa">IA</button>
         </div>
+        <div class="dropdown-menu">
+            <button class="dropdown-item" @onclick="CreateGameMulti">MultiPlayer</button>
+        </div>
     }
     <button @onclick="JoinGame" class="menu-button">Join a game</button>
     @if (showJoinGame)
     {
         <div class="dropdown-menu">
-            <input type="text" placeholder="Enter the game code"/>
-            <button class="dropdown-item">Join</button>
+            <input type="text" @bind="gameCode" placeholder="Enter the game code"/>
+            <button @onclick="JoinParty" class="dropdown-item">Join</button>
         </div>
     }
 </div>
@@ -29,6 +32,8 @@
 @code {
     private bool showDropdown;
     private bool showJoinGame;
+    private string gameCode;
+
 
     private void ToggleDropdown()
     {
@@ -81,9 +86,104 @@
         }
     }
 
+    private async Task CreateGameMulti()
+    {
+        var playerId = Guid.NewGuid();
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(new InitializeGameRequest(playerId, new GameSettings(GameMode.Multiplayer))),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await Http.PostAsync("/games", jsonContent);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var gameInfo = await response.Content.ReadFromJsonAsync<InitializeGameResponse>();
+            var playerBoard = new char[10, 10];
+            foreach (var Ship in gameInfo.Ships)
+            {
+                switch (Ship.Direction)
+                {
+                    case Direction.Horizontal:
+                        for (var i = 0; i < Ship.Length; i++)
+                        {
+                            playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
+                        }
+
+                        break;
+                    case Direction.Vertical:
+                        for (var i = 0; i < Ship.Length; i++)
+                        {
+                            playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
+                        }
+
+                        break;
+                    default:
+                        return;
+                }
+            }
+
+            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId);
+            navigationManager.NavigateTo("/home");
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+        }
+    }
+
     private async Task JoinGame()
     {
         showJoinGame = !showJoinGame;
+    }
+
+    private async Task JoinParty()
+    {
+        var gameId = Guid.Parse(gameCode);
+        Console.Write(gameCode);
+        using StringContent jsonContent = new(
+            JsonSerializer.Serialize(new TryJoinGameRequest(gameId, Guid.NewGuid())),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await Http.PostAsync("/join", jsonContent);
+        if (response.IsSuccessStatusCode)
+        {
+            var gameInfo = await response.Content.ReadFromJsonAsync<TryJoinGameResponse>();
+            Console.WriteLine(gameInfo.SessionId);
+            Console.WriteLine(gameInfo.Player2Id);
+            var playerBoard = new char[10, 10];
+            foreach (var Ship in gameInfo.Ships)
+            {
+                switch (Ship.Direction)
+                {
+                    case Direction.Horizontal:
+                        for (var i = 0; i < Ship.Length; i++)
+                        {
+                            playerBoard[Ship.X + i, Ship.Y] = Ship.Type.ToString().Substring(0, 1)[0];
+                        }
+
+                        break;
+                    case Direction.Vertical:
+                        for (var i = 0; i < Ship.Length; i++)
+                        {
+                            playerBoard[Ship.X, Ship.Y + i] = Ship.Type.ToString().Substring(0, 1)[0];
+                        }
+
+                        break;
+                    default:
+                        return;
+                }
+            }
+
+            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], gameInfo.Player2Id);
+            navigationManager.NavigateTo("/home");
+            
+        }
+        else
+        {
+            Console.WriteLine($"Error: {response.StatusCode}");
+        }
     }
 
 }

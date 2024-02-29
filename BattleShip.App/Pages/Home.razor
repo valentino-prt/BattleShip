@@ -5,7 +5,7 @@
 @inject GameState GameState;
 @implements IAsyncDisposable
 
-<h3>Home</h3>
+<h3>Home - Party ID : @GameState.GameId</h3>
 
 <div class="boards-container">
     <div>
@@ -56,7 +56,6 @@
         
         hubConnection.On<AttackResponse>("ReceiveAttackResult", (attackResponse) =>
         {
-            Console.Write($"WESH {attackResponse.Coordinates.X} {attackResponse.Coordinates.Y} {attackResponse.Result} {attackResponse.GameStatus} {attackResponse.ShipName} {attackResponse.Sunk}");
             var statusMessage = $"Game Status: {attackResponse.GameStatus}";
 
             // If there's a ship name, include it in the message
@@ -120,7 +119,7 @@
                 return;
         }
         UserBoard[opponentAttack.Coordinates.X, opponentAttack.Coordinates.Y] = value;
-        userHistory.Add($"Coup: {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y} - Résultat: {opponentAttack.Result}");
+        userHistory.Add($"Play: {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y} - Result: {opponentAttack.Result}");
         StateHasChanged();
     }
 
@@ -141,7 +140,7 @@
         }
 
         OpponentBoard[col, row] = value;
-        opponentHistory.Add($"Coup: {col},{row} - Résultat: {playerAttack.Result}");
+        opponentHistory.Add($"Play: {col},{row} - Result: {playerAttack.Result}");
         StateHasChanged();
     }
 }
