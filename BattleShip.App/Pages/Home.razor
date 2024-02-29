@@ -1,6 +1,11 @@
 ﻿@page "/home"
 @using BattleShip.Models
 @using BattleShip.Models.Response
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Text.Json
+@inject NavigationManager Navigation
+@inject GameState GameState;
+@implements IAsyncDisposable
 
 <h3>Home</h3>
 
@@ -29,11 +34,71 @@
     }
 </style>
 @code{
-
     [Parameter]
     public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
     [Parameter]
     public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
+    
+    private HubConnection? hubConnection;
+    private List<string> messages = new List<string>();
+    private string? userInput;
+    private string? messageInput;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("http://localhost:5143/playerHub"))
+            .Build();
+
+        
+        hubConnection.On<AttackResponse>("ReceiveAttackResult", (attackResponse) =>
+        {
+            Console.Write("WESH");
+            var statusMessage = $"Game Status: {attackResponse.GameStatus}";
+
+            // If there's a ship name, include it in the message
+            var shipMessage = attackResponse.ShipName != null ? $" on {attackResponse.ShipName}" : "";
+
+            // Indicate if the ship was sunk
+            var sunkMessage = attackResponse.Sunk ? " and sunk it!" : "";
+
+            // Combine all parts to create the final message
+            var encodedMsg = $"AI Attack Result: {shipMessage}{sunkMessage}. {statusMessage}";
+
+            // Add the message to the list
+            messages.Add(encodedMsg);
+
+            // Refresh the UI
+            InvokeAsync(StateHasChanged);
+        });
+
+        // Démarrage de la connexion au hub
+        await hubConnection.StartAsync();
+
+
+        // Appel de la méthode "RegisterUserId" sur le hub après l'établissement de la connexion
+        await hubConnection.InvokeAsync("RegisterUserId", GameState.PlayerId );
+    }
+
+
+    private async Task Send()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendMessage", userInput, messageInput);
+        }
+    }
+
+    public bool IsConnected =>
+        hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
     
     /*private void UpdateUserBoard(AttackResponse AiAttack)
     {
@@ -56,8 +121,6 @@
 
     private void UpdateOpponentBoard(AttackResponse playerAttack, int col, int row)
     {
-        Console.Write(playerAttack);
-        Console.Write(playerAttack);
         var value = 'O';
         switch (playerAttack.Result)
         {
