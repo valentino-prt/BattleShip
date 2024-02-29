@@ -130,7 +130,7 @@ public class GameService
         if (player.IsTurn)
         {
             var attackResult = PerformPlayerAttack(opponent, x, y);
-
+            if( attackResult.Result == AttackOutcome.AlreadyAttacked)  return attackResult;
             if (attackResult.Result == AttackOutcome.Hit)
             {
                 var ship = opponent.Ships.Find(s => s.Name.Equals(attackResult.ShipName));
