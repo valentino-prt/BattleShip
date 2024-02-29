@@ -1,4 +1,4 @@
-namespace BattleShip.Models.Response;
+namespace BattleShip.Models.Responses;
 
 public class TryJoinGameResponse(Guid sessionId, Guid player2Id, List<Ship>? ships, GameStatus status)
 {

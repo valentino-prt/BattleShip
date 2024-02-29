@@ -1,14 +1,14 @@
 using BattleShip.Api.Models;
+using BattleShip.Models;
 
 namespace BattleShip.Api.Services.Behaviors;
 
 public class StrategicBehavior : IBehavior
 {
-    // TODO : Change (int, int) to a Coordinate class
-    private readonly List<(int x, int y)> _hitTargets = new();
+    private readonly List<Coordinates> _hitTargets = new();
     private readonly Random _random = new();
 
-    public (int x, int y) ChooseAttackCoordinates(Board opponentBoard)
+    public Coordinates ChooseAttackCoordinates(Board opponentBoard)
     {
         if (_hitTargets.Any())
         {
@@ -16,7 +16,7 @@ public class StrategicBehavior : IBehavior
             var lastHit = _hitTargets.Last();
             // Exemple: choisir une case adjacente à la dernière réussite
             // Cette partie doit être développée en fonction de votre logique spécifique
-            return (AdjustCoordinate(lastHit.x), AdjustCoordinate(lastHit.y));
+            return new Coordinates(AdjustCoordinate(lastHit.X), AdjustCoordinate(lastHit.Y));
         }
 
         return new RandomBehavior().ChooseAttackCoordinates(opponentBoard);

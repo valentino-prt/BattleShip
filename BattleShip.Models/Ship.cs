@@ -4,9 +4,10 @@ public class Ship
 {
     public Ship(ShipType type, int x, int y, Direction direction)
     {
+        // TODO : Change X and Y for Coordinates object
         Type = type;
-        X = x;
-        Y = y;
+        X = x; // X coordinate ( top left corner of the grid )
+        Y = y; // Y coordinate ( top left corner of the grid )
         Direction = direction;
         Hits = 0;
     }

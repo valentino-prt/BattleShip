@@ -4,61 +4,34 @@ option csharp_namespace = "BattleShip.Api.Grpc";
 
 package battleship;
 
-// Définition du service
-service BattleShipService {
-  rpc CreateGame (Empty) returns (GameInitInfo);
-  rpc Attack (AttackRequest) returns (GamePlayInfo);
-}
-
 // Définition des messages
-message Empty {}
-
-message GameInitInfo {
-  string gameId = 1;
-  repeated Ship ships = 2;
-}
-
-message GamePlayInfo {
-  string gameId = 1;
-  string winner = 2;
-  AttackResult lastPlayerAttackResult = 3;
-  AttackResult lastAutoPlayerAttackResult = 4;
-}
-
-message AttackRequest {
-  string gameId = 1;
+message Ship {
+  int32 type = 1;
   int32 x = 2;
   int32 y = 3;
+  int32 direction = 4;
+  int32 hits = 5;
 }
 
-message Ship {
-  string type = 1;
-  int32 length = 2;
-  int32 x = 3;
-  int32 y = 4;
-  Direction direction = 5;
+message InitializeGameRequest {
+  string creatorId = 1;
+  GameSettings gameSettings = 2;
 }
 
-message Position {
-  int32 x = 1;
-  int32 y = 2;
+message GameSettings {
+  int32 mode = 1;
+  int32 difficulty = 2; // Peut être omis si non applicable pour certains modes
 }
 
-message AttackResult {
-  AttackOutcome outcome = 1;
-  Position coordinates = 2; // Supposant que chaque résultat d'attaque inclut des coordonnées, modifiez selon vos besoins
-  string shipName = 3;
+message InitializeGameResponse {
+  string sessionId = 1;
+  string player1Id = 2;
+  repeated Ship ships = 3;
+  int32 status = 4;
 }
 
-enum AttackOutcome {
-  MISS = 0;
-  HIT = 1;
-  SUNK = 2;
-  ALREADY_ATTACKED = 3;
-}
 
-enum Direction {
-  HORIZONTAL = 0;
-  VERTICAL = 1;
+// Définition du service
+service BattleShipService {
+  rpc CreateGame(InitializeGameRequest) returns (InitializeGameResponse);
 }
-

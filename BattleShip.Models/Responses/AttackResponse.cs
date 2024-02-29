@@ -1,8 +1,9 @@
-namespace BattleShip.Models.Response;
+namespace BattleShip.Models.Responses;
 
 public class AttackResponse
 {
-    public AttackResponse(AttackOutcome result, string? shipName, bool sunk, GameStatus gameStatus, Coordinates coordinates)
+    public AttackResponse(AttackOutcome result, string? shipName, bool sunk, GameStatus gameStatus,
+        Coordinates coordinates)
     {
         Result = result;
         ShipName = shipName;
@@ -16,18 +17,6 @@ public class AttackResponse
     public bool Sunk { get; set; }
     public GameStatus GameStatus { get; set; }
     public Coordinates Coordinates { get; set; }
-}
-
-public class Coordinates
-{
-    public Coordinates(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
-
-    public int X { get; set; }
-    public int Y { get; set; }
 }
 
 public enum GameStatus
