@@ -12,11 +12,13 @@ public class StrategicBehavior : IBehavior
     {
         if (_hitTargets.Any())
         {
-            // Logique pour choisir autour des cibles touchées précédemment
             var lastHit = _hitTargets.Last();
-            // Exemple: choisir une case adjacente à la dernière réussite
-            // Cette partie doit être développée en fonction de votre logique spécifique
-            return new Coordinates(AdjustCoordinate(lastHit.X), AdjustCoordinate(lastHit.Y));
+            // Decide whether to adjust the last hit horizontally or vertically
+            if (_random.Next(2) == 0)
+                // Adjust horizontally
+                return new Coordinates(AdjustCoordinate(lastHit.X), lastHit.Y);
+            // Adjust vertically
+            return new Coordinates(lastHit.X, AdjustCoordinate(lastHit.Y));
         }
 
         return new RandomBehavior().ChooseAttackCoordinates(opponentBoard);
@@ -24,7 +26,8 @@ public class StrategicBehavior : IBehavior
 
     private int AdjustCoordinate(int coordinate)
     {
-        // Logique pour ajuster la coordonnée, par exemple, incrémenter ou décrémenter en restant dans les limites du plateau
-        return Math.Max(0, Math.Min(coordinate + _random.Next(-1, 2), Board.Width - 1));
+        var adjustment =
+            _random.Next(2) == 0 ? -1 : 1;
+        return Math.Max(0, Math.Min(coordinate + adjustment, Board.Width - 1));
     }
 }
