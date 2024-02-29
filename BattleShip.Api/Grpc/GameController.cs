@@ -1,6 +1,5 @@
 using BattleShip.Api.Services;
-using BattleShip.Models.Requests;
-using BattleShip.Models.Responses;
+using BattleShip.Models;
 using Grpc.Core;
 
 namespace BattleShip.Api.Grpc;
@@ -14,10 +13,30 @@ public class BattleShipServiceImpl : BattleShipService.BattleShipServiceBase
         _gameService = gameService;
     }
 
-    public Task<InitializeGameResponse> CreateGame(InitializeGameRequest request, ServerCallContext context)
+    public override Task<InitializeGameResponse> CreateGame(InitializeGameRequest request, ServerCallContext context)
     {
-        var gameInfo = _gameService.InitializeGame(request.CreatorId, request.GameSettings);
-        return Task.FromResult(gameInfo);
+        var guid = new Guid(request.CreatorId);
+        var gameSettings =
+            new BattleShip.Models.GameSettings((GameMode)request.GameSettings.Mode,
+                (AiDifficulty?)request.GameSettings.Difficulty);
+
+        var gameInfo = _gameService.InitializeGame(guid, gameSettings);
+
+        var ships = gameInfo.Ships.Select(s => new Ship
+        {
+            X = s.X,
+            Y = s.Y,
+            Direction = (int)s.Direction,
+            Type = (int)s.Type
+        }).ToArray();
+        var response = new InitializeGameResponse
+        {
+            SessionId = gameInfo.SessionId.ToString(),
+            Player1Id = gameInfo.Player1Id.ToString(),
+            Ships = { ships },
+            Status = (int)gameInfo.Status
+        };
+        return Task.FromResult(response);
     }
 
     // public override async Task<AttackResponse> PerformAttack(AttackRequest request, ServerCallContext context)

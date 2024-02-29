@@ -4,10 +4,34 @@ option csharp_namespace = "BattleShip.Api.Grpc";
 
 package battleship;
 
-// Définition du service
-service BattleShipService {
-  rpc CreateGame(InitializeGameResponse) returns (GameInitInfo);
-//  rpc Attack (AttackRequest) returns (GamePlayInfo);
+// Définition des messages
+message Ship {
+  int32 type = 1;
+  int32 x = 2;
+  int32 y = 3;
+  int32 direction = 4;
+  int32 hits = 5;
 }
 
-// Définition des messages
+message InitializeGameRequest {
+  string creatorId = 1;
+  GameSettings gameSettings = 2;
+}
+
+message GameSettings {
+  int32 mode = 1;
+  int32 difficulty = 2; // Peut être omis si non applicable pour certains modes
+}
+
+message InitializeGameResponse {
+  string sessionId = 1;
+  string player1Id = 2;
+  repeated Ship ships = 3;
+  int32 status = 4;
+}
+
+
+// Définition du service
+service BattleShipService {
+  rpc CreateGame(InitializeGameRequest) returns (InitializeGameResponse);
+}

@@ -1,4 +1,5 @@
 using BattleShip.Api.Api;
+using BattleShip.Api.Grpc;
 using BattleShip.Api.Hubs;
 using BattleShip.Api.Services;
 using BattleShip.Api.Utils;
@@ -26,11 +27,17 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowMyOrigin",
         builder =>
         {
-            builder.WithOrigins("http://localhost:5051")
+            builder.WithOrigins("http://localhost:5000")
                 .AllowAnyHeader()
-                .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding")
                 .AllowAnyMethod();
         });
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.WithOrigins("http://localhost:5001")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+    });
 });
 
 var app = builder.Build();
@@ -46,11 +53,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseGrpcWeb();
-// app.MapGrpcService<BattleShipServiceImpl>().EnableGrpcWeb()
-//     .RequireCors("AllowAll");
-
-
 app.UseCors("AllowMyOrigin");
+app.MapGrpcService<BattleShipServiceImpl>().EnableGrpcWeb()
+    .RequireCors("AllowAll");
 
 // Endpoints configuration
 app.MapGameEndpoints();
