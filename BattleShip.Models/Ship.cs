@@ -8,13 +8,14 @@ public class Ship
         X = x;
         Y = y;
         Direction = direction;
+        Hits = 0;
     }
 
     public int X { get; set; } // X coordinate
     public int Y { get; set; } // Y coordinate
     public ShipType Type { get; set; } // Type of the ship, must be public to match constructor parameter
     public Direction Direction { get; set; } // Direction of the ship
-    public int Hits { get; set; } = 0; // Number of hits on the ship
+    public int Hits { get; set; } // Number of hits on the ship
 
     public string Name => Type switch
     {

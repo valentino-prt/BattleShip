@@ -12,9 +12,10 @@ public class PlayerHub : Hub
         _connectionMapping = connectionMapping;
     }
 
-    public async Task RegisterUserId(Guid userId)
+    public Task RegisterUserId(Guid userId)
     {
         var connectionId = Context.ConnectionId;
         _connectionMapping.Add(userId, connectionId);
+        return Task.CompletedTask;
     }
 }

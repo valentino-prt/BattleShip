@@ -25,7 +25,7 @@ public class GameService
     {
         var opponentBoard = opponent.Board;
         var val = opponentBoard.Grid[x, y];
-        
+
         switch (val)
         {
             case '\0':
@@ -78,9 +78,9 @@ public class GameService
         player1.IsTurn = true;
         var session = new GameSession { Player1 = player1, GameSettings = gameSettings };
 
-        if (gameSettings.Mode == GameMode.SoloVsAI)
+        if (gameSettings.Mode == GameMode.SoloVsAi)
         {
-            var behavior = gameSettings.Difficulty == AIDifficulty.Easy
+            var behavior = gameSettings.Difficulty == AiDifficulty.Easy
                 ? (IBehavior)new RandomBehavior()
                 : new StrategicBehavior();
 

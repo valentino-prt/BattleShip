@@ -4,6 +4,7 @@ namespace BattleShip.Api.Services.Behaviors;
 
 public class StrategicBehavior : IBehavior
 {
+    // TODO : Change (int, int) to a Coordinate class
     private readonly List<(int x, int y)> _hitTargets = new();
     private readonly Random _random = new();
 

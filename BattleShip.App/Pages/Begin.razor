@@ -39,7 +39,7 @@
     {
         var playerId = Guid.NewGuid();
         using StringContent jsonContent = new(
-            JsonSerializer.Serialize(new InitializeGameRequest(playerId, new GameSettings(GameMode.SoloVsAI, AIDifficulty.Easy))),
+            JsonSerializer.Serialize(new InitializeGameRequest(playerId, new GameSettings(GameMode.SoloVsAi, AiDifficulty.Easy))),
             Encoding.UTF8,
             "application/json");
 

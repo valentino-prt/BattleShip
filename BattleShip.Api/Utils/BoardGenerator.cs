@@ -5,7 +5,7 @@ namespace BattleShip.Api.Utils;
 
 public class BoardGenerator
 {
-    private static readonly Random _random = new();
+    private static readonly Random Random = new();
     private readonly Board _board = new();
     private readonly List<Ship> _ships = new();
 
@@ -26,15 +26,15 @@ public class BoardGenerator
             while (!placed)
             {
                 // Generate random position and direction
-                var x = _random.Next(Board.Width);
-                var y = _random.Next(Board.Height);
-                var direction = _random.Next(2) == 0 ? Direction.Horizontal : Direction.Vertical;
+                var x = Random.Next(Board.Width);
+                var y = Random.Next(Board.Height);
+                var direction = Random.Next(2) == 0 ? Direction.Horizontal : Direction.Vertical;
 
                 // Create ship to be placed
                 var ship = new Ship(type, x, y, direction);
 
                 // Check if ship can be placed
-                if (CanPlaceShip(_board, ship))
+                if (CanPlaceShip(ship))
                 {
                     _ships.Add(ship);
                     _board.UpdateGridWithShip(ship);
@@ -46,7 +46,7 @@ public class BoardGenerator
         return (_board, _ships);
     }
 
-    private bool CanPlaceShip(Board board, Ship ship)
+    private bool CanPlaceShip(Ship ship)
     {
         // Determine the ship's coverage on the board based on its direction
         var shipEndX = ship.X + (ship.Direction == Direction.Horizontal ? ship.Length : 0);

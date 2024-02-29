@@ -4,11 +4,11 @@ namespace BattleShip.Models;
 
 public enum GameMode
 {
-    SoloVsAI,
+    SoloVsAi,
     Multiplayer
 }
 
-public enum AIDifficulty
+public enum AiDifficulty
 {
     Easy,
     Medium,
@@ -18,12 +18,12 @@ public enum AIDifficulty
 public class GameSettings
 {
     [JsonConstructor]
-    public GameSettings(GameMode mode, AIDifficulty? difficulty = null)
+    public GameSettings(GameMode mode, AiDifficulty? difficulty = null)
     {
         Mode = mode;
         Difficulty = difficulty;
     }
 
     public GameMode Mode { get; set; }
-    public AIDifficulty? Difficulty { get; set; }
+    public AiDifficulty? Difficulty { get; set; }
 }

@@ -20,7 +20,7 @@ public class ConnectionMapping
         }
     }
 
-    public string GetConnectionId(Guid userId)
+    public string? GetConnectionId(Guid userId)
     {
         lock (_connections)
         {

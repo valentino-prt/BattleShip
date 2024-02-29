@@ -6,6 +6,7 @@ public class RandomBehavior : IBehavior
 {
     private readonly Random _random = new();
 
+    // TODO : Change (int, int) to a Coordinate class
     public (int x, int y) ChooseAttackCoordinates(Board opponentBoard)
     {
         int x, y;

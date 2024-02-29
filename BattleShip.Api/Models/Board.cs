@@ -11,12 +11,9 @@ public class Board
     public Board()
     {
         Grid = InitializeBoard();
-        attacks = 0;
     }
 
     public char[,] Grid { get; set; } // grid of the board
-
-    public int attacks { get; set; } // number of attacks made on the board
 
     public void PrintBoard()
     {
