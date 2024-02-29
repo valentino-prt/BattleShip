@@ -5,6 +5,7 @@ namespace BattleShip.Api.Services.Behaviors;
 
 public class StrategicBehavior : IBehavior
 {
+    // TODO : Verify if _hitTargets is used
     private readonly List<Coordinates> _hitTargets = new();
     private readonly Random _random = new();
 
