@@ -48,8 +48,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        //TODO use app.settings et IConfiguration
         hubConnection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:5143/playerHub")
+            .WithUrl("http://localhost:5143/playerhub")
             .Build();
 
         
