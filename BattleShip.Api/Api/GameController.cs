@@ -22,9 +22,9 @@ public static class GameController
             })
             .WithName("PerformAttack").WithOpenApi();
 
-        endpoints.MapPost("/join", (GameService gameService, TryJoinGameRequest request) =>
+        endpoints.MapPost("/join", async (GameService gameService, TryJoinGameRequest request) =>
             {
-                var joinResponse = gameService.TryJoinGame(request.SessionId, request.PlayerId);
+                var joinResponse = await gameService.TryJoinGame(request.SessionId, request.PlayerId);
                 return Results.Ok(joinResponse);
             })
             .WithName("JoinGame").WithOpenApi();

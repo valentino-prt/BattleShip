@@ -102,24 +102,43 @@ public class GameService
     }
 
 
-    public TryJoinGameResponse TryJoinGame(Guid sessionId, Guid playerId)
+    public async Task<TryJoinGameResponse> TryJoinGame(Guid sessionId, Guid playerId)
     {
+        var joinGameResponse = null as TryJoinGameResponse;
+        var opponentConnectionId = null as string;
+        
         if (_sessions.TryGetValue(sessionId, out var session))
         {
             if (session.Player2 == null)
             {
                 var player2 = new Player(playerId);
+                joinGameResponse = new TryJoinGameResponse(sessionId, player2.Id, player2.Ships, GameStatus.InProgress);
                 session.Player2 = player2;
                 // Successfully joined the game
-                return new TryJoinGameResponse(sessionId, player2.Id, player2.Ships, GameStatus.InProgress);
+                 opponentConnectionId = _connectionMapping.GetConnectionId(session.Player1.Id);
+                if (opponentConnectionId != null)
+                    await _hubContext.Clients.Client(opponentConnectionId)
+                        .SendAsync("GameJoined",joinGameResponse);
+                    return joinGameResponse;
             }
 
             // Session already full
-            return new TryJoinGameResponse(sessionId, playerId, null, GameStatus.Full);
+            joinGameResponse = new TryJoinGameResponse(sessionId, playerId, null, GameStatus.Full);
+             opponentConnectionId = _connectionMapping.GetConnectionId(session.Player1.Id);
+            if (opponentConnectionId != null) 
+                await _hubContext.Clients.Client(opponentConnectionId)
+                    .SendAsync("GameJoined",joinGameResponse);
+                return joinGameResponse;
         }
 
         // If session does not exist or other error
-        return new TryJoinGameResponse(sessionId, playerId, null, GameStatus.DoesNotExist);
+        joinGameResponse = new TryJoinGameResponse(sessionId, playerId, null,  GameStatus.DoesNotExist);
+         opponentConnectionId = _connectionMapping.GetConnectionId(session.Player1.Id);
+        if (opponentConnectionId != null)
+            await _hubContext.Clients.Client(opponentConnectionId)
+                .SendAsync("GameJoined",joinGameResponse);
+            return joinGameResponse;
+        return joinGameResponse;
     }
 
 

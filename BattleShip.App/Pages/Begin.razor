@@ -111,11 +111,10 @@
             return;
         }
 
-        GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId);
+        GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId, true, GameMode.SoloVsAi);
         NavigationManager.NavigateTo("/home");
     }
-
-
+    
     private async Task CreateGameMulti()
     {
         var playerId = Guid.NewGuid();
@@ -161,7 +160,7 @@
 
         if (gameInfo != null)
         {
-            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId);
+            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId, true, GameMode.Multiplayer);
             NavigationManager.NavigateTo("/home");
         }
         else
@@ -238,8 +237,9 @@
                 }
             }
 
-            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], gameInfo.Player2Id);
+            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], gameInfo.Player2Id, false,GameMode.Multiplayer);
             NavigationManager.NavigateTo("/home");
+            
         }
         else
         {

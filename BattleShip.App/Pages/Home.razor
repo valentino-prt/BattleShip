@@ -1,10 +1,28 @@
 ﻿@page "/home"
-@inject GameState GameState;
 @using Microsoft.AspNetCore.SignalR.Client
+@using BattleShip.Models
+@inject GameState GameState;
 @using BattleShip.Models.Responses
 @implements IAsyncDisposable
 
 
+@if (ShowWaitingPopup && GameState.Mode == GameMode.Multiplayer)
+{
+    Console.WriteLine($"State popup : {ShowWaitingPopup}  {GameState.IsHost}");
+    <div class="overlay"></div>
+    <div class="waiting-popup">
+        Waiting from connection...
+    </div>
+}
+
+@if (ShowWaitingPlayerPopup && GameState.Mode == GameMode.Multiplayer)
+{
+    Console.WriteLine($"State popup : {ShowWaitingPlayerPopup}  {GameState.IsHost}");
+    <div class="overlay"></div>
+    <div class="waiting-popup">
+        Waiting for opponent plays...
+    </div>
+}
 <div class="container text-center">
     <h1 class="m-3"> The War of the Sea</h1>
     <div class="row justify-content-center">
@@ -21,10 +39,34 @@
     </div>
 
 </div>
-
+<style>
+    .waiting-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+        
+     .overlay {
+         
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100vw;
+             height: 100vh;
+             background-color: rgba(0,0,0,0.5);
+             z-index: 99;
+         }
+</style>
 @code{
     [Parameter] public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
     [Parameter] public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
+    [Parameter] public bool IsHost { get; set; } = GameState.Instance.IsHost;
     private readonly List<string> _userHistory = new();
     private readonly List<string> _opponentHistory = new();
 
@@ -33,9 +75,21 @@
     private readonly List<string> _messages = new();
     private string? _userInput;
     private string? _messageInput;
-
+    public bool ShowWaitingPopup;
+    public bool ShowWaitingPlayerPopup;
+    
     protected override async Task OnInitializedAsync()
     {
+        if(GameState.IsHost)
+        {
+            ShowWaitingPopup = true;
+            ShowWaitingPlayerPopup = false;
+        }
+        else
+        {
+            ShowWaitingPopup = false;
+            ShowWaitingPlayerPopup = true;
+        }
         //TODO : use app.settings et IConfiguration
         _hubConnection = new HubConnectionBuilder()
             .WithUrl("https://localhost:5000/playerhub")
@@ -59,8 +113,22 @@
             _messages.Add(encodedMsg);
 
             UpdateUserBoard(attackResponse);
+            ShowWaitingPlayerPopup = false;
             // Refresh the UI
-            InvokeAsync(StateHasChanged);
+            StateHasChanged();
+        });
+        
+        _hubConnection.On<TryJoinGameResponse>("GameJoined", (joinResponse) =>
+        {
+            Console.WriteLine($"Game Joined {joinResponse.Status}");
+            if (joinResponse.Status == GameStatus.InProgress)
+            {
+                ShowWaitingPopup = false;
+                ShowWaitingPlayerPopup = false;
+                _messages.Add("Game Joined");
+            }
+            
+            StateHasChanged();
         });
 
         // Démarrage de la connexion au hub
