@@ -114,7 +114,7 @@
         GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], playerId, true, GameMode.SoloVsAi);
         NavigationManager.NavigateTo("/home");
     }
-    
+
     private async Task CreateGameMulti()
     {
         var playerId = Guid.NewGuid();
@@ -174,7 +174,7 @@
         var board = new char[10, 10];
         foreach (var ship in ships)
         {
-            var shipSymbol = ship.Type.ToString().Substring(0, 1)[0]; // Obtient le premier caractère du type de navire comme symbole
+            var shipSymbol = ship.Type.ToString().Substring(0, 1)[0];
             switch (ship.Direction)
             {
                 case Direction.Horizontal:
@@ -237,9 +237,8 @@
                 }
             }
 
-            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], gameInfo.Player2Id, false,GameMode.Multiplayer);
+            GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], gameInfo.Player2Id, false, GameMode.Multiplayer);
             NavigationManager.NavigateTo("/home");
-            
         }
         else
         {

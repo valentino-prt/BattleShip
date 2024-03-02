@@ -11,7 +11,7 @@
     Console.WriteLine($"State popup : {ShowWaitingPopup}  {GameState.IsHost}");
     <div class="overlay"></div>
     <div class="waiting-popup">
-        Waiting from connection...
+        Waiting for Opponent connection <br/> Game ID : @GameState.GameId
     </div>
 }
 
@@ -198,6 +198,7 @@
 
         OpponentBoard[col, row] = value;
         _opponentHistory.Add($"Play: {col},{row} - Result: {playerAttack.Result}");
+        ShowWaitingPlayerPopup = true;
         StateHasChanged();
     }
 
