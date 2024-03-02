@@ -1,4 +1,4 @@
-﻿<table class="board-table">
+﻿<table class="table table-bordered table-dark">
     <thead>
     <tr>
         <th></th>
@@ -15,14 +15,14 @@
         <tr>
             <td>@row</td>
             @for (var col = 0; col <= 9; col++)
-            {   
+            {
                 var currentCol = col;
-                var currentRow = (int)row - 'A';
+                var currentRow = row - 'A';
                 var cell = Table[currentCol, currentRow];
                 switch (cell)
                 {
                     case '\0':
-                        <td style="background-color: white"></td>
+                        <td></td>
                         break;
                     case 'X':
                         <td style="background-color: red">X</td>
@@ -39,8 +39,8 @@
     }
     </tbody>
 </table>
+
 @code
 {
-    [Parameter]
-    public char[,] Table { get; set; }
+    [Parameter] public char[,] Table { get; set; }
 }

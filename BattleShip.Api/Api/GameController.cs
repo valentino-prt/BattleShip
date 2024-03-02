@@ -13,20 +13,20 @@ public static class GameController
                 var gameInfo = gameService.InitializeGame(request.CreatorId, request.GameSettings);
                 return Results.Ok(gameInfo);
             })
-            .WithName("CreateGame");
+            .WithName("CreateGame").WithOpenApi();
 
         endpoints.MapPost("/attack", async (GameService gameService, AttackRequest request) =>
             {
                 var attackResponse = await gameService.Attack(request.GameId, request.PlayerId, request.X, request.Y);
                 return Results.Ok(attackResponse);
             })
-            .WithName("PerformAttack");
+            .WithName("PerformAttack").WithOpenApi();
 
         endpoints.MapPost("/join", (GameService gameService, TryJoinGameRequest request) =>
             {
                 var joinResponse = gameService.TryJoinGame(request.SessionId, request.PlayerId);
                 return Results.Ok(joinResponse);
             })
-            .WithName("JoinGame");
+            .WithName("JoinGame").WithOpenApi();
     }
 }

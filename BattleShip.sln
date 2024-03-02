@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleShip.Models", "Battle
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{5CF18A90-C027-41A1-B563-BEBA305E782B}"
 	ProjectSection(SolutionItems) = preProject
-		battleship.proto = battleship.proto
+		BattleShipService.proto = BattleShipService.proto
 	EndProjectSection
 EndProject
 Global

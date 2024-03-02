@@ -13,18 +13,18 @@ else
     }
 }
 
-<button class="btn btn-primary" @onclick="ToggleHistory">Show More</button>
+<button class="btn btn-dark" @onclick="ToggleHistory">Show More</button>
 
 @code {
-    [Parameter]
-    public List<string> HistoryItems { get; set; }
+    [Parameter] public List<string> HistoryItems { get; set; }
 
     private bool ShowFullHistory { get; set; } = false;
-    
+
     private string ButtonText => ShowFullHistory ? "Show Less" : "Show More";
-    
+
     private void ToggleHistory()
     {
         ShowFullHistory = !ShowFullHistory;
     }
+
 }

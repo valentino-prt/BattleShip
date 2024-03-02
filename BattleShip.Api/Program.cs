@@ -10,6 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<GameService>(); // Gestion des jeux
 builder.Services.AddSingleton<ConnectionMapping>(); // Gestion des connexions
 
+// CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // SignalR configuration
 builder.Services.AddSignalR();
 
@@ -21,24 +32,6 @@ builder.Services.AddGrpc();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS configuration
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowMyOrigin",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:5000")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
-    options.AddPolicy("AllowAll", builder =>
-    {
-        builder.WithOrigins("http://localhost:5001")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
-    });
-});
 
 var app = builder.Build();
 
@@ -52,10 +45,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGrpcService<BattleShipServiceImpl>()
+    .EnableGrpcWeb();
 app.UseGrpcWeb();
-app.UseCors("AllowMyOrigin");
-app.MapGrpcService<BattleShipServiceImpl>().EnableGrpcWeb()
-    .RequireCors("AllowAll");
+
+app.UseCors();
 
 // Endpoints configuration
 app.MapGameEndpoints();

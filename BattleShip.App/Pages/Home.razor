@@ -4,33 +4,23 @@
 @using BattleShip.Models.Responses
 @implements IAsyncDisposable
 
-<h3>Home - Party ID : @GameState.GameId</h3>
 
-<div class="boards-container">
-    <div>
-        <h5>Player 1 Board</h5>
-        <BoardUser Table="UserBoard"/>
-        <History HistoryItems="_userHistory"></History>
-    </div>
-
-    <div>
-        <h5>Player 2 Board</h5>
-        <BoardOpponent Table="OpponentBoard" OnUpdate="a => UpdateOpponentBoard(a.UserResult, a.col, a.row)"/>
-        <History HistoryItems="_opponentHistory"></History>
+<div class="container text-center">
+    <h1 class="m-3"> The War of the Sea</h1>
+    <div class="row justify-content-center">
+        <div class="col">
+            <h1>My Ships</h1>
+            <BoardUser Table="UserBoard"/>
+            <History HistoryItems="_userHistory"></History>
+        </div>
+        <div class="col">
+            <h1>Opponent's Ships</h1>
+            <BoardOpponent Table="OpponentBoard" OnUpdate="a => UpdateOpponentBoard(a.UserResult, a.col, a.row)"/>
+            <History HistoryItems="_opponentHistory"></History>
+        </div>
     </div>
 
 </div>
-
-<style>
-    .boards-container {
-        display: flex;
-        justify-content: space-around;
-    }
-
-    .boards-container > div {
-        margin: 10px;
-    }
-</style>
 
 @code{
     [Parameter] public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
@@ -48,7 +38,7 @@
     {
         //TODO : use app.settings et IConfiguration
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:5000/playerhub")
+            .WithUrl("https://localhost:5000/playerhub")
             .Build();
 
 

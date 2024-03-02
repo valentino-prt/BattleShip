@@ -1,13 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap');
+
+
+h1 {
+    font-family: 'Black Ops One', system-ui, sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+body {
+    background-image: url('../images/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    margin: 0;
+}
+
+
 .board-table {
     width: 40%;
     border-collapse: collapse;
     table-layout: fixed;
 }
 
-.board-table th{
+.board-table th {
     padding: 0;
     height: 30px;
 }
+
 .board-table td {
     border: 1px solid #080908;
     padding: 0;
@@ -29,3 +49,6 @@
     background-color: #ffffff;
 }
 
+body {
+    background: darkgray;
+}
