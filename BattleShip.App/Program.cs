@@ -1,8 +1,8 @@
 using BattleShip.Api.Grpc;
 using BattleShip.App;
+using BattleShip.Models;
 using Grpc.Net.Client;
 using Grpc.Net.Client.Web;
-using BattleShip.Models;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -22,9 +22,8 @@ builder.Services.AddScoped(sp =>
 const string apiUrl = "https://localhost:5000";
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(apiUrl) });
 
-GameState.InitializeInstance(Guid.NewGuid(), new char[10, 10], new char[10, 10], Guid.NewGuid(), false, GameMode.SoloVsAi );
+GameState.InitializeInstance(Guid.NewGuid(), new char[10, 10], new char[10, 10], Guid.NewGuid(), false,
+    GameMode.SoloVsAi);
 builder.Services.AddSingleton(GameState.Instance);
 
 await builder.Build().RunAsync();
-
-//TODO validation API
