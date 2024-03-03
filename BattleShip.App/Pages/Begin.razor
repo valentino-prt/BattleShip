@@ -211,32 +211,7 @@
         if (response.IsSuccessStatusCode)
         {
             var gameInfo = await response.Content.ReadFromJsonAsync<TryJoinGameResponse>();
-            Console.WriteLine(gameInfo.SessionId);
-            Console.WriteLine(gameInfo.Player2Id);
-            var playerBoard = new char[10, 10];
-            foreach (var ship in gameInfo.Ships)
-            {
-                switch (ship.Direction)
-                {
-                    case Direction.Horizontal:
-                        for (var i = 0; i < ship.Length; i++)
-                        {
-                            playerBoard[ship.X + i, ship.Y] = ship.Type.ToString().Substring(0, 1)[0];
-                        }
-
-                        break;
-                    case Direction.Vertical:
-                        for (var i = 0; i < ship.Length; i++)
-                        {
-                            playerBoard[ship.X, ship.Y + i] = ship.Type.ToString().Substring(0, 1)[0];
-                        }
-
-                        break;
-                    default:
-                        return;
-                }
-            }
-
+            var playerBoard = InitializePlayerBoard(gameInfo.Ships);
             GameState.InitializeInstance(gameInfo.SessionId, playerBoard, new char[10, 10], gameInfo.Player2Id, false, GameMode.Multiplayer);
             NavigationManager.NavigateTo("/home");
         }
