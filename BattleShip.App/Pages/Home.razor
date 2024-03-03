@@ -4,6 +4,7 @@
 @inject GameState GameState;
 @using BattleShip.Models.Responses
 @implements IAsyncDisposable
+@inject NavigationManager NavigationManager
 
 
 @if (ShowWaitingPopup && GameState.Mode == GameMode.Multiplayer)
@@ -21,6 +22,15 @@
     <div class="overlay"></div>
     <div class="waiting-popup">
         Waiting for opponent plays...
+    </div>
+}
+
+@if (ShowEndGamePopup)
+{
+    <div class="overlay"></div>
+    <div class="waiting-popup">
+        @EndGameMessage
+        <button @onclick="ReturnToHome">Retour à l'accueil</button>
     </div>
 }
 <div class="container text-center">
@@ -63,12 +73,15 @@
              z-index: 99;
          }
 </style>
+
 @code{
     [Parameter] public char[,] UserBoard { get; set; } = GameState.Instance.UserBoard;
     [Parameter] public char[,] OpponentBoard { get; set; } = GameState.Instance.OpponentBoard;
     [Parameter] public bool IsHost { get; set; } = GameState.Instance.IsHost;
     private readonly List<string> _userHistory = new();
     private readonly List<string> _opponentHistory = new();
+    public bool ShowEndGamePopup { get; set; } = false;
+    public string EndGameMessage { get; set; } = "";
 
 
     private HubConnection? _hubConnection;
@@ -77,10 +90,10 @@
     private string? _messageInput;
     public bool ShowWaitingPopup;
     public bool ShowWaitingPlayerPopup;
-    
+
     protected override async Task OnInitializedAsync()
     {
-        if(GameState.IsHost)
+        if (GameState.IsHost)
         {
             ShowWaitingPopup = true;
             ShowWaitingPlayerPopup = false;
@@ -90,6 +103,7 @@
             ShowWaitingPopup = false;
             ShowWaitingPlayerPopup = true;
         }
+
         //TODO : use app.settings et IConfiguration
         _hubConnection = new HubConnectionBuilder()
             .WithUrl("https://localhost:5000/playerhub")
@@ -99,25 +113,28 @@
         _hubConnection.On<AttackResponse>("ReceiveAttackResult", attackResponse =>
         {
             var statusMessage = $"Game Status: {attackResponse.GameStatus}";
+            //TODO ajouter un compteur de bateaux coulés
+            if (attackResponse.GameStatus == GameStatus.Completed)
+            {
+                Console.WriteLine("ID perdant : " + GameState.PlayerId);
+                var isWinner = false;
+                ShowEndGame(isWinner);
+            }
 
-            // If there's a ship name, include it in the message
+            Console.WriteLine("Status Message : " + statusMessage);
             var shipMessage = attackResponse.ShipName != null ? $" on {attackResponse.ShipName}" : "";
 
-            // Indicate if the ship was sunk
             var sunkMessage = attackResponse.Sunk ? " and sunk it!" : "";
 
-            // Combine all parts to create the final message
             var encodedMsg = $"AI Attack Result: {shipMessage}{sunkMessage}. {statusMessage}";
 
-            // Add the message to the list
             _messages.Add(encodedMsg);
 
             UpdateUserBoard(attackResponse);
             ShowWaitingPlayerPopup = false;
-            // Refresh the UI
             StateHasChanged();
         });
-        
+
         _hubConnection.On<TryJoinGameResponse>("GameJoined", (joinResponse) =>
         {
             Console.WriteLine($"Game Joined {joinResponse.Status}");
@@ -127,26 +144,16 @@
                 ShowWaitingPlayerPopup = false;
                 _messages.Add("Game Joined");
             }
-            
+
             StateHasChanged();
         });
 
-        // Démarrage de la connexion au hub
         await _hubConnection.StartAsync();
 
 
-        // Appel de la méthode "RegisterUserId" sur le hub après l'établissement de la connexion
         await _hubConnection.InvokeAsync("RegisterUserId", GameState.PlayerId);
     }
 
-
-    private async Task Send()
-    {
-        if (_hubConnection is not null)
-        {
-            await _hubConnection.SendAsync("SendMessage", _userInput, _messageInput);
-        }
-    }
 
     public bool IsConnected =>
         _hubConnection?.State == HubConnectionState.Connected;
@@ -198,8 +205,29 @@
 
         OpponentBoard[col, row] = value;
         _opponentHistory.Add($"Play: {col},{row} - Result: {playerAttack.Result}");
-        ShowWaitingPlayerPopup = true;
+        if (playerAttack.GameStatus == GameStatus.Completed)
+        {
+            var isWinner = true;
+            ShowEndGame(isWinner);
+        }
+        else
+        {
+            ShowWaitingPlayerPopup = true;
+        }
+
         StateHasChanged();
+    }
+
+    private void ShowEndGame(bool isWinner)
+    {
+        EndGameMessage = isWinner ? "Félicitations, vous avez gagné !" : "Dommage, vous avez perdu.";
+        ShowEndGamePopup = true;
+        StateHasChanged();
+    }
+
+    private void ReturnToHome()
+    {
+        NavigationManager.NavigateTo("/");
     }
 
 }
