@@ -136,7 +136,7 @@
             var creatorId = Guid.Parse(response.Player1Id);
             var ships = response.Ships.Select(s => new Ship((ShipType)s.Type, s.X, s.Y, (Direction)s.Direction)).ToList();
             gameInfo = new InitializeGameResponse(session, creatorId, ships, (GameStatus)response.Status);
-            playerBoard = InitializePlayerBoard(gameInfo.Ships); // Utiliser la méthode pour initialiser le tableau
+            playerBoard = InitializePlayerBoard(gameInfo.Ships);
         }
         else
         {

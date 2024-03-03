@@ -104,7 +104,6 @@
             ShowWaitingPlayerPopup = true;
         }
 
-        //TODO : use app.settings et IConfiguration
         _hubConnection = new HubConnectionBuilder()
             .WithUrl("https://localhost:5000/playerhub")
             .Build();

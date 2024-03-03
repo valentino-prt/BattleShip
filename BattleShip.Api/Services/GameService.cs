@@ -119,7 +119,7 @@ public class GameService
                 if (opponentConnectionId != null)
                     await _hubContext.Clients.Client(opponentConnectionId)
                         .SendAsync("GameJoined",joinGameResponse);
-                    return joinGameResponse;
+                return joinGameResponse;
             }
 
             // Session already full
@@ -128,7 +128,7 @@ public class GameService
             if (opponentConnectionId != null) 
                 await _hubContext.Clients.Client(opponentConnectionId)
                     .SendAsync("GameJoined",joinGameResponse);
-                return joinGameResponse;
+            return joinGameResponse;
         }
 
         // If session does not exist or other error
@@ -137,7 +137,6 @@ public class GameService
         if (opponentConnectionId != null)
             await _hubContext.Clients.Client(opponentConnectionId)
                 .SendAsync("GameJoined",joinGameResponse);
-            return joinGameResponse;
         return joinGameResponse;
     }
 
@@ -163,7 +162,6 @@ public class GameService
                 }
             }
 
-            // Si le mode contre l'IA est activé, simuler l'attaque de l'IA ici
             if (opponent.Id == Guid.Empty)
             {
                 var aiPlayer = opponent;
@@ -181,7 +179,6 @@ public class GameService
                     }
                 }
 
-                // Envoyer le résultat de l'attaque de l'IA au joueur humain
                 var playerConnectionId = _connectionMapping.GetConnectionId(player.Id);
                 if (playerConnectionId != null)
                     await _hubContext.Clients.Client(playerConnectionId)
@@ -189,7 +186,6 @@ public class GameService
             }
             else
             {
-                // Envoyer le résultat de l'attaque au joueur adverse
                 var opponentConnectionId = _connectionMapping.GetConnectionId(opponent.Id);
                 if (opponentConnectionId != null)
                     await _hubContext.Clients.Client(opponentConnectionId)

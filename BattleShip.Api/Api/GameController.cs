@@ -9,7 +9,6 @@ public static class GameController
     {
         endpoints.MapPost("/games", (GameService gameService, InitializeGameRequest request) =>
             {
-                // Vous pouvez ajouter une validation ici si nécessaire
                 var gameInfo = gameService.InitializeGame(request.CreatorId, request.GameSettings);
                 return Results.Ok(gameInfo);
             })
