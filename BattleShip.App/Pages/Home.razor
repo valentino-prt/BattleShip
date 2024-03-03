@@ -113,7 +113,6 @@
         _hubConnection.On<AttackResponse>("ReceiveAttackResult", attackResponse =>
         {
             var statusMessage = $"Game Status: {attackResponse.GameStatus}";
-            //TODO ajouter un compteur de bateaux coulés
             if (attackResponse.GameStatus == GameStatus.Completed)
             {
                 Console.WriteLine("ID perdant : " + GameState.PlayerId);
@@ -121,7 +120,6 @@
                 ShowEndGame(isWinner);
             }
 
-            Console.WriteLine("Status Message : " + statusMessage);
             var shipMessage = attackResponse.ShipName != null ? $" on {attackResponse.ShipName}" : "";
 
             var sunkMessage = attackResponse.Sunk ? " and sunk it!" : "";
@@ -169,13 +167,15 @@
     private void UpdateUserBoard(AttackResponse opponentAttack)
     {
         var value = 'O';
+        var sunkMessage = "";
         switch (opponentAttack.Result)
         {
             case AttackOutcome.Hit:
                 value = 'X';
-                break;
-            case AttackOutcome.Sunk:
-                Console.Write("Sunk");
+                if (opponentAttack.Sunk)
+                {
+                    sunkMessage = $" - {opponentAttack.ShipName} has been sunk!";
+                }
                 break;
             case AttackOutcome.AlreadyAttacked:
                 Console.WriteLine($"Error: Player Already Attacked {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y}");
@@ -183,20 +183,23 @@
         }
 
         UserBoard[opponentAttack.Coordinates.X, opponentAttack.Coordinates.Y] = value;
-        _userHistory.Add($"Play: {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y} - Result: {opponentAttack.Result}");
+        _userHistory.Add($"Play: {opponentAttack.Coordinates.X},{opponentAttack.Coordinates.Y} - Result: {opponentAttack.Result}{sunkMessage}");
         StateHasChanged();
     }
 
     private void UpdateOpponentBoard(AttackResponse playerAttack, int col, int row)
     {
         var value = 'O';
+        var sunkMessage = "";
         switch (playerAttack.Result)
         {
             case AttackOutcome.Hit:
                 value = 'X';
-                break;
-            case AttackOutcome.Sunk:
-                Console.Write("Sunk");
+                if (playerAttack.Sunk)
+                {
+                    sunkMessage = $" - {playerAttack.ShipName} has been sunk!";
+                }
+
                 break;
             case AttackOutcome.AlreadyAttacked:
                 Console.WriteLine($"Error: Player Already Attacked {col},{row}");
@@ -204,7 +207,7 @@
         }
 
         OpponentBoard[col, row] = value;
-        _opponentHistory.Add($"Play: {col},{row} - Result: {playerAttack.Result}");
+        _opponentHistory.Add($"Play: {col},{row} - Result: {playerAttack.Result} {sunkMessage}");
         if (playerAttack.GameStatus == GameStatus.Completed)
         {
             var isWinner = true;
