@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<GameService>(); // Gestion des jeux
 builder.Services.AddSingleton<ConnectionMapping>(); // Gestion des connexions
 
+
 // CORS configuration
 builder.Services.AddCors(options =>
 {
