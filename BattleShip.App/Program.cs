@@ -28,5 +28,4 @@ builder.Services.AddSingleton(GameState.Instance);
 await builder.Build().RunAsync();
 
 //TODO validation API
-//TODO Faire fin de partie 
-//TODO rediriger home apres la fin et popup gagnant
+//TODO Faire fin de partie Win + rediriger home apres la fin et popup gagnant
